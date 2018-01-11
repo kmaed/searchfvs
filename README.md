@@ -14,13 +14,12 @@ the following command:
 
     $ ./searchfvs <network data>
 
-<network data> should be a text file containing the list of edges of a network
+&lt;network data&gt; should be a text file containing the list of edges of a network
 (see the next section). Then the program finds all the minimal FVSs of
 the network. The program outputs first the number of nodes of minimal FVSs,
 and the names of the nodes in each minimal FVS with running number.
 
-For example, the file ciona.txt is a gene regulatory network data of
-Ciona embryos.
+For example, the file [ciona.txt](https://github.com/kmaed/searchfvs/blob/master/ciona.txt) is a gene regulatory network data of Ciona embryos.
 
     $ ./searchfvs ciona.txt
 
