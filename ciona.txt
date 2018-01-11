@@ -1,0 +1,333 @@
+# Regulatory interactions in the developmental gene regulatory network in Ciona embryos
+# up to the late gastrula stage
+#
+# Note: edges of self repression are removed (commented out)
+#
+# Admp Admp
+Admp Fgf8/17/18
+Admp Nodal
+Admp Otx
+Admp Tbx2/3
+# Bmp2/4 Bmp2/4
+Bmp2/4 Tbx2/3
+# Brachyury Brachyury
+Brachyury Fgl
+Brachyury Noto1
+Ctnnb Alp
+Ctnnb Efna.d
+Ctnnb Fgf9/16/20
+Ctnnb Foxa.a
+Ctnnb Foxd
+Ctnnb Lhx3/4
+Ctnnb Tbx6.b
+Ctnnb Tfap2-r.b
+Ctnnb Zic-r.b
+Ctnnb Zic-r.b
+Delta.b Brachyury
+Delta.b Cdx
+# Delta.b Delta.b
+Delta.b Ebf3
+Delta.b Efna.d
+Delta.b Fgf8/17/18
+Delta.b Foxb
+Delta.b Gsx
+Delta.b Hes.b
+Delta.b Id
+Delta.b Meis
+Delta.b Mrf
+Delta.b Neurog
+Delta.b Pax6
+# Dlx.b Dlx.b
+Dlx.b Emx
+Dlx.b Epi1
+Dlx.b Epib
+Dlx.b Foxc
+Dlx.b Foxh.a
+Dlx.b Gata.b
+Dlx.b Myt1
+Dlx.b Six3/6
+Dlx.b Zic-r.b
+# Dmrt.a Dmrt.a
+Dmrt.a Foxc
+Dmrt.a Six3/6
+Efna.d ERK_signaling
+ERK_signaling BHLHA15
+ERK_signaling Brachyury
+ERK_signaling Cers.e
+ERK_signaling Chd
+ERK_signaling Delta.b
+ERK_signaling Dmrt.a
+ERK_signaling Dusp1/2/4/5
+ERK_signaling Ebf3
+ERK_signaling Efna.c
+ERK_signaling Elk
+ERK_signaling Epi1
+ERK_signaling Fgf8/17/18
+ERK_signaling Fgf8/17/18
+ERK_signaling Fgf9/16/20
+ERK_signaling Fli/Erg.a
+ERK_signaling Fos
+ERK_signaling Foxb
+ERK_signaling Foxc
+ERK_signaling Foxc
+ERK_signaling Hhex
+ERK_signaling Id
+ERK_signaling Jun
+ERK_signaling Lhx3/4
+ERK_signaling Mesp
+ERK_signaling Mnx1
+ERK_signaling Mrf
+ERK_signaling Msx
+ERK_signaling Myt1
+ERK_signaling Nkx2-1/4
+ERK_signaling Nodal
+ERK_signaling Nog
+ERK_signaling Otx
+ERK_signaling Pax3/7
+ERK_signaling Pax6
+ERK_signaling Tfap2-r.b
+ERK_signaling Twist-r.a/b
+ERK_signaling Twist-r.c
+ERK_signaling Zf249
+ERK_signaling Zic-r.b
+Fgf8/17/18 ERK_signaling
+Fgf9/16/20 ERK_signaling
+Foxa.a Alp
+Foxa.a Brachyury
+Foxa.a CG.KH2012.C8.686
+Foxa.a Chd
+Foxa.a Delta.b
+Foxa.a Delta.b
+Foxa.a Dmrt.a
+Foxa.a Dusp1/2/4/5
+Foxa.a Emx
+Foxa.a Eph.a
+Foxa.a Foxb
+Foxa.a Foxc
+Foxa.a Fzd4
+Foxa.a Gata.b
+Foxa.a Hand-r
+Foxa.a Lhx3/4
+Foxa.a Mnx1
+Foxa.a Msx
+Foxa.a Myt1
+Foxa.a Nkx2-1/4
+Foxa.a Nodal
+Foxa.a Otx
+Foxa.a Pax3/7
+Foxa.a Pax6
+Foxa.a Sfrp1/5
+Foxa.a Twist-r.a/b
+Foxa.a Zf266
+Foxa.a Zic-r.b
+Foxb Cdx
+Foxb Fgf8/17/18
+# Foxb Foxb
+Foxb Mnx1
+Foxb Pax6
+# Foxc Foxc
+Foxc Zic-r.b
+Foxd Brachyury
+Foxd Chd
+Foxd Delta.b
+Foxd Dlx.b
+Foxd Dmrt.a
+Foxd Ebf3
+Foxd Fgf8/17/18
+Foxd Fgf9/16/20
+Foxd Foxa.a
+Foxd Foxb
+# Foxd Foxd
+Foxd Hand-r
+Foxd Lhx3/4
+Foxd Mnx1
+Foxd Myt1
+Foxd Neurog
+Foxd Nkx2-1/4
+Foxd Nodal
+Foxd Otx
+Foxd Pax6
+Foxd Prdm1-r.a
+Foxd Prdm1-r.b
+Foxd Twist-r.a/b
+Foxd Twist-r.a/b
+Foxd Wnt5
+Foxd Zf266
+Foxd Zic-r.b
+Gata.a Efna.d
+Gata.a Epi1
+Gata.a Epib
+Gata.a Otx
+Gata.a Tfap2-r.b
+Gata.a Zic-r.b
+Gdf1/3-r Nodal
+Gdf1/3-r Otx
+# Hand-r Hand-r
+Hand-r Twist-r.a/b
+Hes.a Foxa.a
+Hes.a Zic-r.b
+# Id Id
+# Lefty Lefty
+Lhx3/4 Alp
+Lhx3/4 Mesp
+# Lmx1 Lmx1
+# Mesp Mesp
+Mrf Acta1
+# Mrf Mrf
+Mrf Myl
+Mrf Otp
+Mrf Smyd1
+Msx Lmx1
+Neurog Delta.b
+Neurog Ebf3
+Neurog Fgf8/17/18
+Neurog Fgf8/17/18
+Neurog Id
+Neurog Myt1
+# Neurog Neurog
+Neurog Snail
+Nodal Chd
+Nodal Delta.b
+Nodal Ebf3
+Nodal Efna.b
+Nodal Fgf8/17/18
+Nodal Fgf9/16/20
+Nodal Foxc
+Nodal Hand-r
+Nodal Hes.b
+Nodal Id
+Nodal Lefty
+Nodal Lmx1
+Nodal Mrf
+Nodal Msx
+Nodal Myt1
+Nodal Neurog
+# Nodal Nodal
+Nodal Pax3/7
+Nodal Pax6
+Nodal Snail
+Nodal Tbx6.b
+Nodal Twist-r.a/b
+Otx BHLHA15
+Otx Cers.e
+Otx Fli/Erg.a
+Otx Fos
+Otx Foxc
+Otx Hhex
+Otx Jun
+Otx Msx
+Otx Myt1
+# Otx Otx
+Otx Six3/6
+Otx Twist-r.a/b
+Otx Twist-r.c
+# Pax3/7 Pax3/7
+# Pax6 Pax6
+Pem1 Admp
+Pem1 Fgf9/16/20
+Pem1 Foxa.a
+Pem1 Foxb
+Pem1 Sox1/2/3
+Prdm1-r.a Efna.d
+Prdm1-r.a Foxa.a
+# Prdm1-r.a Prdm1-r.a
+Prdm1-r.a Prdm1-r.b
+Prdm1-r.a Six3/6
+Prdm1-r.a Zic-r.b
+Prdm1-r.b Efna.d
+Prdm1-r.b Six3/6
+Prdm1-r.b Zic-r.b
+Snail Brachyury
+Snail Efna.b
+Snail Efna.d
+Snail Fgf8/17/18
+Snail Foxa.a
+Snail Gsx
+Snail Mnx1
+Snail Myt1
+# Snail Snail
+Sox1/2/3 Dlx.b
+Sox1/2/3 Epib
+Sox1/2/3 Foxc
+Sox1/2/3 Msx
+Sox1/2/3 Nodal
+Sox1/2/3 Otx
+Sox1/2/3 Six3/6
+# Sox1/2/3 Sox1/2/3
+Sox1/2/3 Zic-r.b
+Sox4/11/12 Cdx
+Sox4/11/12 Delta.b
+Sox4/11/12 Dmrt.a
+Sox4/11/12 Fgf8/17/18
+Sox4/11/12 Foxc
+Sox4/11/12 Gata.b
+Sox4/11/12 Myt1
+Sox4/11/12 Neurog
+Sox4/11/12 Nodal
+Sox4/11/12 Pax6
+Sox4/11/12 Snail
+Tbx2/3 Msx
+# Tbx2/3 Tbx2/3
+Tbx6.b Mesp
+Tbx6.b Mnx1
+Tbx6.b Mrf
+Tbx6.b Otp
+Tbx6.b Smyd1
+Tbx6.b Snail
+# Tbx6.b Tbx6.b
+Tbx6.b Zic-r.b
+Tfap2-r.b Epib
+Tfap2-r.b Id
+Tp53.a Brachyury
+Tp53.a Zic-r.b
+Tp53.b Brachyury
+Tp53.b Zic-r.b
+Twist-r.a/b BHLHA15
+Twist-r.a/b Cers.e
+Twist-r.a/b Fli/Erg.a
+Twist-r.a/b Fos
+Twist-r.a/b Foxd
+Twist-r.a/b Hhex
+Twist-r.a/b Twist-r.c
+# Wnt5 Wnt5
+Wnt5 Zic-r.b
+Wnttun5 Nodal
+Wnttun5 Otx
+Zic-r.a Admp
+Zic-r.a Hes.b
+Zic-r.a Lefty
+Zic-r.a Nodal
+Zic-r.a Otx
+Zic-r.a Snail
+Zic-r.a Tbx6.a
+Zic-r.a Tbx6.b
+Zic-r.a Wnt5
+Zic-r.a Wnttun5
+Zic-r.b Bco
+Zic-r.b Brachyury
+Zic-r.b Cdx
+Zic-r.b Celf3.a
+Zic-r.b Chd
+Zic-r.b Delta.b
+Zic-r.b Ebf3
+Zic-r.b Efna.d
+Zic-r.b Fos
+Zic-r.b Lhx3/4
+Zic-r.b Lmx1
+Zic-r.b Mnx1
+Zic-r.b Mrf
+Zic-r.b Myt1
+Zic-r.b Neurog
+Zic-r.b Otp
+Zic-r.b Pax6
+Zic-r.b Rlbp1
+Zic-r.b Six3/6
+Zic-r.b Smyd1
+Zic-r.b Snail
+Zic-r.b Tbx6.a
+Zic-r.b Tbx6.b
+Zic-r.b Tubb
+Zic-r.b Twist-r.a/b
+Zic-r.b Wnt5
+Zic-r.b Zf266
+# Zic-r.b Zic-r.b
