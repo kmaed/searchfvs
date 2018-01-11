@@ -1,6 +1,6 @@
 # Searchfvs
 
-Searchfvs is a simple solver for the [feedback vertex set (FVS) problem](https://en.wikipedia.org/wiki/Feedback_vertex_set).
+Searchfvs is a simple solver for the directed [feedback vertex set (FVS) problem](https://en.wikipedia.org/wiki/Feedback_vertex_set).
 
 ## Compile
 
