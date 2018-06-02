@@ -33,28 +33,6 @@ unsigned int minfvs = maxnumnodes;
 
 bitset<maxnumnodes> path;       // for detectcycle()
 
-class bitset_cmp_num{
-public:
-  bool operator() (const bitset<maxnumnodes> &__x, const bitset<maxnumnodes> &__y) const {
-    return __x.count() < __y.count();
-  }
-};
-
-class bitset_cmp_as_int{
-public:
-  bool operator() (const bitset<maxnumnodes> &__x, const bitset<maxnumnodes> &__y) const {
-    for(int i = 0; i < maxnumnodes; ++i){
-      if(__x[i] != __y[i]){
-        if(__x[i])
-          return true;
-        else
-          return false;
-      }
-    }
-    return true;
-  }
-};
-
 void addandreducecycles(bitset<maxnumnodes>& cycle){
   // add?
   for(auto it = cycles.begin(); it != cycles.end(); ++it)
@@ -142,15 +120,17 @@ void addnode(string node){
 int main(int argc, char** argv){
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
+  bool printstat = false;
 
   struct option long_options[] =
     {
      {"help", no_argument, NULL, 'h'},
      {"print-cycles", no_argument, NULL, 'c'},
-     {"no-search", no_argument, NULL, 'n'}
+     {"no-search", no_argument, NULL, 'n'},
+     {"print-stat", no_argument, NULL, 's'}
     };
 
-  while((opt = getopt_long(argc, argv, "chn", long_options, &longindex)) != -1){
+  while((opt = getopt_long(argc, argv, "chns", long_options, &longindex)) != -1){
     switch(opt){
     case 'h':
       printhelp = true;
@@ -160,6 +140,9 @@ int main(int argc, char** argv){
       break;
     case 'n':
       nosearch = true;
+      break;
+    case 's':
+      printstat = true;
       break;
     }
   }
@@ -222,7 +205,10 @@ int main(int argc, char** argv){
     detectcycle(i, i, searched);
   }
 
-  sort(cycles.begin(), cycles.end(), bitset_cmp_num());
+  sort(cycles.begin(), cycles.end(),
+       [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
+         return x.count() < y.count();
+       });
 
   // print cycles (if --print-cycles specified)
   if(printcycles){
@@ -250,9 +236,20 @@ int main(int argc, char** argv){
   if(!nosearch){
     bitset<maxnumnodes> selected, searched;
     search(selected, 0, searched);
+    sort(fvs.begin(), fvs.end(),
+         [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
+           for(int i = 0; i < numnodes; ++i){
+             if(x[i] != y[i])
+               return x[i];
+           }
+           return true;
+         });
+    int statfvs[maxnumnodes];
+    for(int i = 0; i < numnodes; ++i)
+      statfvs[i] = count_if(fvs.begin(), fvs.end(),
+                            [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
 
     // output
-    sort(fvs.begin(), fvs.end(), bitset_cmp_as_int());
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
     int w = to_string(fvs.size()).length();
     for(unsigned int i = 0; i < fvs.size(); ++i){
@@ -268,6 +265,14 @@ int main(int argc, char** argv){
       cout << endl;
     }
     cout << endl;
+
+    // print stat. (if --print-stat specified)
+    if(printstat){
+      cout << "Stat.:" << endl;
+      for(int i = 0; i < numnodes; ++i)
+        if(statfvs[i])
+          cout << nodes[i] << ":\t" << statfvs[i] << endl;
+    }
   }
 
   return 0;
