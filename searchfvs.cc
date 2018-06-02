@@ -33,6 +33,8 @@ unsigned int minfvs = maxnumnodes;
 
 bitset<maxnumnodes> path;       // for detectcycle()
 
+unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
+
 void addandreducecycles(bitset<maxnumnodes>& cycle){
   // add?
   for(auto it = cycles.begin(); it != cycles.end(); ++it)
@@ -154,7 +156,7 @@ int main(int argc, char** argv){
     cerr << "  -h or --help          Print this message and exit." << endl;
     cerr << "  -c or --print-cycles  Print the reduced set of cycles." << endl;
     cerr << "  -n or --no-search     Don't search minimal FVSs." << endl;
-    cerr << "  -s or --print-stat    Print statistics of FVSs" << endl;
+    cerr << "  -s or --print-stat    Print statistics of minimal FVSs" << endl;
     return 1;
   }
 
@@ -238,18 +240,24 @@ int main(int argc, char** argv){
   if(!nosearch){
     bitset<maxnumnodes> selected, searched;
     search(selected, 0, searched);
+    int statfvs[maxnumnodes];
+    for(int i = 0; i < maxnumnodes; ++i){
+      statfvs[i] = count_if(fvs.begin(), fvs.end(),
+                            [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
+      srtnodeind[i] = i;
+    }
+
+    sort(srtnodeind, srtnodeind+maxnumnodes,
+         [&](unsigned int i, unsigned int j)->bool{return statfvs[i] > statfvs[j];});
     sort(fvs.begin(), fvs.end(),
          [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
            for(int i = 0; i < numnodes; ++i){
-             if(x[i] != y[i])
-               return x[i];
+             if(x[srtnodeind[i]] != y[srtnodeind[i]])
+               return x[srtnodeind[i]];
            }
            return true;
          });
-    int statfvs[maxnumnodes];
-    for(int i = 0; i < numnodes; ++i)
-      statfvs[i] = count_if(fvs.begin(), fvs.end(),
-                            [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
+
 
     // output
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
@@ -258,8 +266,8 @@ int main(int argc, char** argv){
       cout << setw(w) << i+1 << ": ";
       unsigned int tmp = 1;
       for(int j = 0; j < numnodes; ++j)
-        if(fvs[i][j]){
-          cout << nodes[j];
+        if(fvs[i][srtnodeind[j]]){
+          cout << nodes[srtnodeind[j]];
           if(tmp < minfvs)
             cout << ", ";
           ++tmp;
@@ -270,10 +278,12 @@ int main(int argc, char** argv){
 
     // print stat. (if --print-stat specified)
     if(printstat){
-      cout << "Stat.:" << endl;
+      cout << "Statistics:" << endl;
       for(int i = 0; i < numnodes; ++i)
-        if(statfvs[i])
-          cout << nodes[i] << ":\t" << statfvs[i] << endl;
+        if(statfvs[srtnodeind[i]])
+          cout << nodes[srtnodeind[i]] << ":\t" << statfvs[srtnodeind[i]] << endl;
+        else
+          break;
     }
   }
 
