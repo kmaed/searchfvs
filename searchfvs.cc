@@ -1,6 +1,7 @@
 // searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2018
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -208,12 +209,14 @@ int main(int argc, char** argv){
 
   sort(cycles.begin(), cycles.end(), bitset_cmp());
 
+  // print cycles (if --print-cycles specified)
   if(printcycles){
     cout << "Cycles (reduced):" << endl;
     int n = 1;
+    int w = to_string(cycles.size()).length();
     for(auto it = cycles.begin(); it != cycles.end(); ++it){
       bool first = true;
-      cout << n << ": ";
+      cout << setw(w) << n << ": ";
       for(int j = 0; j < numnodes; ++j)
         if((*it)[j]){
           if(!first)
@@ -225,6 +228,7 @@ int main(int argc, char** argv){
       cout << endl;
       ++n;
     }
+    cout << endl;
   }
 
   // search minimal FVSs
@@ -234,8 +238,9 @@ int main(int argc, char** argv){
 
     // output
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
+    int w = to_string(fvs.size()).length();
     for(unsigned int i = 0; i < fvs.size(); ++i){
-      cout << i+1 << ": ";
+      cout << setw(w) << i+1 << ": ";
       unsigned int tmp = 1;
       for(int j = 0; j < numnodes; ++j)
         if(fvs[i][j]){
@@ -246,6 +251,7 @@ int main(int argc, char** argv){
         }
       cout << endl;
     }
+    cout << endl;
   }
 
   return 0;
