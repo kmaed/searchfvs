@@ -1,4 +1,4 @@
-// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017
+// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2018
 
 #include <iostream>
 #include <vector>
@@ -10,6 +10,7 @@
 #include <bitset>
 #include <algorithm>
 #include <errno.h>
+#include <getopt.h>
 
 using namespace std;
 
@@ -69,7 +70,7 @@ void detectcycle(int start, int i, bitset<maxnumnodes>& searched){
       break;
     } else if(path[*it]){
       endflag = true; // If a branch returns to the node already passed,
-                      // all the results of further search will redundant cycles.
+                      // all the results of further search will be redundant cycles.
     }
   }
 
@@ -123,8 +124,36 @@ void addnode(string node){
 }
 
 int main(int argc, char** argv){
-  if(argc < 2){
-    cerr << "Usage: " << argv[0] << " <network file>" << endl;
+  int opt, longindex;
+  bool printcycles = false, printhelp = false, nosearch = false;
+
+  struct option long_options[] =
+    {
+     {"help", no_argument, NULL, 'h'},
+     {"print-cycles", no_argument, NULL, 'c'},
+     {"no-search", no_argument, NULL, 'n'}
+    };
+
+  while((opt = getopt_long(argc, argv, "chn", long_options, &longindex)) != -1){
+    switch(opt){
+    case 'h':
+      printhelp = true;
+      break;
+    case 'c':
+      printcycles = true;
+      break;
+    case 'n':
+      nosearch = true;
+      break;
+    }
+  }
+
+  if(printhelp || argc - optind < 1){
+    cerr << "Usage: " << argv[0] << " [options] <network file>" << endl;
+    cerr << "Options:" << endl;
+    cerr << "  -h or --help          Print this message and exit." << endl;
+    cerr << "  -c or --print-cycles  Print the reduced set of cycles." << endl;
+    cerr << "  -n or --no-search     Don't search minimal FVSs." << endl;
     return 1;
   }
 
@@ -137,7 +166,7 @@ int main(int argc, char** argv){
   ifstream fin;
   fin.exceptions(ios::failbit);
   try{
-    fin.open(argv[1]);
+    fin.open(argv[optind]);
   } catch (exception e){
     cerr << argv[0] << ": " << argv[1] << ": " << strerror(errno) << endl;
     return 1;
@@ -179,23 +208,44 @@ int main(int argc, char** argv){
 
   sort(cycles.begin(), cycles.end(), bitset_cmp());
 
-  // search minimal FVSs
-  bitset<maxnumnodes> selected, searched;
-  search(selected, 0, searched);
+  if(printcycles){
+    cout << "Cycles (reduced):" << endl;
+    int n = 1;
+    for(auto it = cycles.begin(); it != cycles.end(); ++it){
+      bool first = true;
+      cout << n << ": ";
+      for(int j = 0; j < numnodes; ++j)
+        if((*it)[j]){
+          if(!first)
+            cout << ", ";
+          else
+            first = false;
+          cout << nodes[j];
+        }
+      cout << endl;
+      ++n;
+    }
+  }
 
-  // output
-  cout << "#[nodes of minimal FVS] = " << minfvs << endl;
-  for(unsigned int i = 0; i < fvs.size(); ++i){
-    cout << i+1 << ": ";
-    unsigned int tmp = 1;
-    for(int j = 0; j < numnodes; ++j)
-      if(fvs[i][j]){
-        cout << nodes[j];
-        if(tmp < minfvs)
-          cout << ", ";
-        ++tmp;
-      }
-    cout << endl;
+  // search minimal FVSs
+  if(!nosearch){
+    bitset<maxnumnodes> selected, searched;
+    search(selected, 0, searched);
+
+    // output
+    cout << "#[nodes of minimal FVS] = " << minfvs << endl;
+    for(unsigned int i = 0; i < fvs.size(); ++i){
+      cout << i+1 << ": ";
+      unsigned int tmp = 1;
+      for(int j = 0; j < numnodes; ++j)
+        if(fvs[i][j]){
+          cout << nodes[j];
+          if(tmp < minfvs)
+            cout << ", ";
+          ++tmp;
+        }
+      cout << endl;
+    }
   }
 
   return 0;
