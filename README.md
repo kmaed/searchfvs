@@ -12,7 +12,7 @@ the following command:
 
 ## Usage
 
-    $ ./searchfvs <network data>
+    $ ./searchfvs [options] <network data>
 
 &lt;network data&gt; should be a text file containing the list of edges of a network
 (see the next section). Then the program finds all the minimal FVSs of
@@ -24,6 +24,8 @@ For example, the file [ciona.txt](https://github.com/kmaed/searchfvs/blob/master
     $ ./searchfvs ciona.txt
 
 will give the list of minimal FVSs of the network.
+
+One can specify several options. `--help` outputs the list of options.
 
 ## Network data
 
