@@ -33,10 +33,25 @@ unsigned int minfvs = maxnumnodes;
 
 bitset<maxnumnodes> path;       // for detectcycle()
 
-class bitset_cmp{
+class bitset_cmp_num{
 public:
   bool operator() (const bitset<maxnumnodes> &__x, const bitset<maxnumnodes> &__y) const {
     return __x.count() < __y.count();
+  }
+};
+
+class bitset_cmp_as_int{
+public:
+  bool operator() (const bitset<maxnumnodes> &__x, const bitset<maxnumnodes> &__y) const {
+    for(int i = 0; i < maxnumnodes; ++i){
+      if(__x[i] != __y[i]){
+        if(__x[i])
+          return true;
+        else
+          return false;
+      }
+    }
+    return true;
   }
 };
 
@@ -207,7 +222,7 @@ int main(int argc, char** argv){
     detectcycle(i, i, searched);
   }
 
-  sort(cycles.begin(), cycles.end(), bitset_cmp());
+  sort(cycles.begin(), cycles.end(), bitset_cmp_num());
 
   // print cycles (if --print-cycles specified)
   if(printcycles){
@@ -237,6 +252,7 @@ int main(int argc, char** argv){
     search(selected, 0, searched);
 
     // output
+    sort(fvs.begin(), fvs.end(), bitset_cmp_as_int());
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
     int w = to_string(fvs.size()).length();
     for(unsigned int i = 0; i < fvs.size(); ++i){
