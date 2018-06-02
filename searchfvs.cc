@@ -127,7 +127,8 @@ int main(int argc, char** argv){
      {"help", no_argument, NULL, 'h'},
      {"print-cycles", no_argument, NULL, 'c'},
      {"no-search", no_argument, NULL, 'n'},
-     {"print-stat", no_argument, NULL, 's'}
+     {"print-stat", no_argument, NULL, 's'},
+     {0, 0, 0, 0}
     };
 
   while((opt = getopt_long(argc, argv, "chns", long_options, &longindex)) != -1){
@@ -153,6 +154,7 @@ int main(int argc, char** argv){
     cerr << "  -h or --help          Print this message and exit." << endl;
     cerr << "  -c or --print-cycles  Print the reduced set of cycles." << endl;
     cerr << "  -n or --no-search     Don't search minimal FVSs." << endl;
+    cerr << "  -s or --print-stat    Print statistics of FVSs" << endl;
     return 1;
   }
 
