@@ -122,18 +122,19 @@ void addnode(string node){
 int main(int argc, char** argv){
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
-  bool printstat = false;
+  bool printstat = false, printpolynomial = false;
 
   struct option long_options[] =
     {
      {"help", no_argument, NULL, 'h'},
      {"print-cycles", no_argument, NULL, 'c'},
      {"no-search", no_argument, NULL, 'n'},
+     {"print-polynomial", no_argument, NULL, 'p'},
      {"print-stat", no_argument, NULL, 's'},
      {0, 0, 0, 0}
     };
 
-  while((opt = getopt_long(argc, argv, "chns", long_options, &longindex)) != -1){
+  while((opt = getopt_long(argc, argv, "chnps", long_options, &longindex)) != -1){
     switch(opt){
     case 'h':
       printhelp = true;
@@ -144,6 +145,9 @@ int main(int argc, char** argv){
     case 'n':
       nosearch = true;
       break;
+    case 'p':
+      printpolynomial = true;
+      break;
     case 's':
       printstat = true;
       break;
@@ -153,10 +157,11 @@ int main(int argc, char** argv){
   if(printhelp || argc - optind < 1){
     cerr << "Usage: " << argv[0] << " [options] <network file>" << endl;
     cerr << "Options:" << endl;
-    cerr << "  -h or --help          Print this message and exit." << endl;
-    cerr << "  -c or --print-cycles  Print the reduced set of cycles." << endl;
-    cerr << "  -n or --no-search     Don't search minimal FVSs." << endl;
-    cerr << "  -s or --print-stat    Print statistics of minimal FVSs" << endl;
+    cerr << "  -h or --help              Print this message and exit." << endl;
+    cerr << "  -c or --print-cycles      Print the reduced set of cycles." << endl;
+    cerr << "  -n or --no-search         Don't search minimal FVSs." << endl;
+    cerr << "  -p or --print-polynomial  Print the list of minimal FVSs as a polynomial." << endl;
+    cerr << "  -s or --print-stat        Print statistics of minimal FVSs" << endl;
     return 1;
   }
 
@@ -258,21 +263,36 @@ int main(int argc, char** argv){
            return true;
          });
 
-
     // output
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
     int w = to_string(fvs.size()).length();
-    for(unsigned int i = 0; i < fvs.size(); ++i){
-      cout << setw(w) << i+1 << ": ";
-      unsigned int tmp = 1;
-      for(int j = 0; j < numnodes; ++j)
-        if(fvs[i][srtnodeind[j]]){
-          cout << nodes[srtnodeind[j]];
-          if(tmp < minfvs)
-            cout << ", ";
-          ++tmp;
-        }
-      cout << endl;
+    if(printpolynomial){
+      for(unsigned int i = 0; i < fvs.size(); ++i){
+        unsigned int tmp = 1;
+        for(int j = 0; j < numnodes; ++j)
+          if(fvs[i][srtnodeind[j]]){
+            cout << '"' << nodes[srtnodeind[j]] << '"';
+            if(tmp < minfvs)
+              cout << " * ";
+            ++tmp;
+          }
+        cout << endl;
+        if(i != fvs.size()-1)
+          cout << " + ";
+      }
+    } else {
+      for(unsigned int i = 0; i < fvs.size(); ++i){
+        cout << setw(w) << i+1 << ": ";
+        unsigned int tmp = 1;
+        for(int j = 0; j < numnodes; ++j)
+          if(fvs[i][srtnodeind[j]]){
+            cout << nodes[srtnodeind[j]];
+            if(tmp < minfvs)
+              cout << ", ";
+            ++tmp;
+          }
+        cout << endl;
+      }
     }
     cout << endl;
 
