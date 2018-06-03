@@ -244,7 +244,7 @@ int main(int argc, char** argv){
   try{
     fin.open(argv[optind]);
   } catch (exception e){
-    cerr << argv[0] << ": " << argv[1] << ": " << strerror(errno) << endl;
+    cerr << argv[0] << ": " << argv[optind] << ": " << strerror(errno) << endl;
     return 1;
   }
 
@@ -259,7 +259,7 @@ int main(int argc, char** argv){
         stringstream ss(tmp);
         ss >> from >> to >> ill;
         if(from == "" || to == "" || ill != ""){
-          cerr << argv[1] << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
+          cerr << argv[optind] << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
           continue;
         }
         auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
