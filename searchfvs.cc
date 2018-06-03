@@ -31,7 +31,7 @@ vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
 vector<bitset<maxnumnodes>> fvs;
 unsigned int minfvs = maxnumnodes;
 
-bitset<maxnumnodes> path;       // for detectcycle()
+bitset<maxnumnodes> path;       // for detectcycles()
 
 unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
 
@@ -51,7 +51,7 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
   cycles.push_back(cycle);
 }
 
-void detectcycle(int start, int i, bitset<maxnumnodes>& searched){
+void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
   path.set(i);
   bitset<maxnumnodes> nextsearched = searched;
   for(auto it = edges[i].begin(); it != edges[i].end(); ++it)
@@ -78,7 +78,7 @@ void detectcycle(int start, int i, bitset<maxnumnodes>& searched){
       if(*it < start || searched[*it])
         continue;
       else
-        detectcycle(start, *it, nextsearched);
+        detectcycles(start, *it, nextsearched);
     }
   }
   path.reset(i);
@@ -117,6 +117,74 @@ void addnode(string node){
     cerr << "       Increase the value of maxnumnodes and recompile the program." << endl;
     exit(1);
   }
+}
+
+void outputcycles(){
+  cout << "Cycles (reduced):" << endl;
+  int n = 1;
+  int w = to_string(cycles.size()).length();
+  for(auto it = cycles.begin(); it != cycles.end(); ++it){
+    bool first = true;
+    cout << setw(w) << n << ": ";
+    for(int j = 0; j < numnodes; ++j)
+      if((*it)[j]){
+        if(!first)
+          cout << ", ";
+        else
+          first = false;
+        cout << nodes[j];
+      }
+    cout << endl;
+    ++n;
+  }
+  cout << endl;
+}
+
+void outputfvss(){
+  int w = to_string(fvs.size()).length();
+  for(unsigned int i = 0; i < fvs.size(); ++i){
+    cout << setw(w) << i+1 << ": ";
+    unsigned int tmp = 1;
+    for(int j = 0; j < numnodes; ++j)
+      if(fvs[i][srtnodeind[j]]){
+        cout << nodes[srtnodeind[j]];
+        if(tmp < minfvs)
+          cout << ", ";
+        ++tmp;
+      }
+    cout << endl;
+  }
+  cout << endl;
+}
+
+void outputfvssaspolynomial(){
+  for(unsigned int i = 0; i < fvs.size(); ++i){
+    unsigned int tmp = 1;
+    for(int j = 0; j < numnodes; ++j)
+      if(fvs[i][srtnodeind[j]]){
+        cout << '"' << nodes[srtnodeind[j]] << '"';
+        if(tmp < minfvs)
+          cout << " * ";
+        ++tmp;
+      }
+    cout << endl;
+    if(i != fvs.size()-1)
+      cout << " + ";
+  }
+  cout << endl;
+}
+
+void outputstat(const int* statfvs){
+  int ws = max_element(nodes.begin(), nodes.end(),
+                      [](string& x, string& y)->bool{return x.length() < y.length();})->length();
+  int w = to_string(fvs.size()).length();
+  cout << "Statistics:" << endl;
+  for(int i = 0; i < numnodes; ++i)
+    if(statfvs[srtnodeind[i]])
+      cout << setw(ws) << nodes[srtnodeind[i]] << ": " << setw(w) << statfvs[srtnodeind[i]] << endl;
+    else
+      break;
+  cout << endl;
 }
 
 int main(int argc, char** argv){
@@ -211,7 +279,7 @@ int main(int argc, char** argv){
   for(int i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
-    detectcycle(i, i, searched);
+    detectcycles(i, i, searched);
   }
 
   sort(cycles.begin(), cycles.end(),
@@ -220,26 +288,8 @@ int main(int argc, char** argv){
        });
 
   // print cycles (if --print-cycles specified)
-  if(printcycles){
-    cout << "Cycles (reduced):" << endl;
-    int n = 1;
-    int w = to_string(cycles.size()).length();
-    for(auto it = cycles.begin(); it != cycles.end(); ++it){
-      bool first = true;
-      cout << setw(w) << n << ": ";
-      for(int j = 0; j < numnodes; ++j)
-        if((*it)[j]){
-          if(!first)
-            cout << ", ";
-          else
-            first = false;
-          cout << nodes[j];
-        }
-      cout << endl;
-      ++n;
-    }
-    cout << endl;
-  }
+  if(printcycles)
+    outputcycles();
 
   // search minimal FVSs
   if(!nosearch){
@@ -255,7 +305,7 @@ int main(int argc, char** argv){
     sort(srtnodeind, srtnodeind+maxnumnodes,
          [&](unsigned int i, unsigned int j)->bool{return statfvs[i] > statfvs[j];});
     sort(fvs.begin(), fvs.end(),
-         [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
+         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y)->bool{
            for(int i = 0; i < numnodes; ++i){
              if(x[srtnodeind[i]] != y[srtnodeind[i]])
                return x[srtnodeind[i]];
@@ -265,46 +315,14 @@ int main(int argc, char** argv){
 
     // output
     cout << "#[nodes of minimal FVS] = " << minfvs << endl;
-    int w = to_string(fvs.size()).length();
-    if(printpolynomial){
-      for(unsigned int i = 0; i < fvs.size(); ++i){
-        unsigned int tmp = 1;
-        for(int j = 0; j < numnodes; ++j)
-          if(fvs[i][srtnodeind[j]]){
-            cout << '"' << nodes[srtnodeind[j]] << '"';
-            if(tmp < minfvs)
-              cout << " * ";
-            ++tmp;
-          }
-        cout << endl;
-        if(i != fvs.size()-1)
-          cout << " + ";
-      }
-    } else {
-      for(unsigned int i = 0; i < fvs.size(); ++i){
-        cout << setw(w) << i+1 << ": ";
-        unsigned int tmp = 1;
-        for(int j = 0; j < numnodes; ++j)
-          if(fvs[i][srtnodeind[j]]){
-            cout << nodes[srtnodeind[j]];
-            if(tmp < minfvs)
-              cout << ", ";
-            ++tmp;
-          }
-        cout << endl;
-      }
-    }
-    cout << endl;
+    if(printpolynomial)
+      outputfvssaspolynomial();
+    else
+      outputfvss();
 
     // print stat. (if --print-stat specified)
-    if(printstat){
-      cout << "Statistics:" << endl;
-      for(int i = 0; i < numnodes; ++i)
-        if(statfvs[srtnodeind[i]])
-          cout << nodes[srtnodeind[i]] << ":\t" << statfvs[srtnodeind[i]] << endl;
-        else
-          break;
-    }
+    if(printstat)
+      outputstat(statfvs);
   }
 
   return 0;
