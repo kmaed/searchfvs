@@ -301,7 +301,7 @@ int main(int argc, char** argv){
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
     cerr << "  -p or --print-polynomial    Print the list of minimal FVSs as a polynomial." << endl;
     cerr << "  -s or --print-stat          Print statistics of minimal FVSs." << endl;
-    cerr << "  -r or --remove-node <node>  Remove nodes of specified name." << endl;
+    cerr << "  -r or --remove-node <node>  Remove specified node." << endl;
     return 1;
   }
 
