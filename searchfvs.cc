@@ -295,7 +295,7 @@ int main(int argc, char** argv){
     cerr << "Usage: " << argv[0] << " [options] <network file>" << endl;
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
-    cerr << "  -n or --no-search           Don't search minimal FVSs (use with -c)." << endl;
+    cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
     cerr << "  -c or --print-cycles        Print the reduced set of cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
