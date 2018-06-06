@@ -1,4 +1,4 @@
-// searchFVS.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2018
+// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2018
 
 #include <iostream>
 #include <iomanip>
