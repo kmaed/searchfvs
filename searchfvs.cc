@@ -21,6 +21,8 @@ const int maxnumnodes = 320;    // the max number of nodes of input network
 
 int numnodes;
 vector<string> nodes;
+vector<string> removenodelist; // list of nodes specified by --remove-node
+vector<string> removednodes;   // actually removed nodes
 
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
@@ -249,17 +251,18 @@ int main(int argc, char** argv){
 
   struct option long_options[] =
     {
-     {"help", no_argument, NULL, 'h'},
      {"print-cycles", no_argument, NULL, 'c'},
+     {"help", no_argument, NULL, 'h'},
      {"no-search", no_argument, NULL, 'n'},
      {"print-polynomial", no_argument, NULL, 'p'},
+     {"remove-node", required_argument, NULL, 'r'},
      {"print-stat", no_argument, NULL, 's'},
      {"print-tree", no_argument, NULL, 't'},
      {"max-tree-depth", required_argument, NULL, 1000},
      {0, 0, 0, 0}
     };
 
-  while((opt = getopt_long(argc, argv, "chnpst", long_options, &longindex)) != -1){
+  while((opt = getopt_long(argc, argv, "chnpr:st", long_options, &longindex)) != -1){
     switch(opt){
     case 'h':
       printhelp = true;
@@ -273,13 +276,16 @@ int main(int argc, char** argv){
     case 'p':
       printpolynomial = true;
       break;
+    case 'r':
+      removenodelist.push_back(optarg);
+      break;
     case 's':
       printstat = true;
       break;
     case 't':
       printtree = true;
       break;
-    case 1000:
+    case 1000:                  // --max-tree-depth
       maxtreedepth = atoi(optarg);
       break;
     }
@@ -288,13 +294,14 @@ int main(int argc, char** argv){
   if(printhelp || argc - optind < 1){
     cerr << "Usage: " << argv[0] << " [options] <network file>" << endl;
     cerr << "Options:" << endl;
-    cerr << "  -h or --help              Print this message and exit." << endl;
-    cerr << "  -n or --no-search         Don't search minimal FVSs (use with -c)." << endl;
-    cerr << "  -c or --print-cycles      Print the reduced set of cycles at the head." << endl;
-    cerr << "  -t or --print-tree        Print the tree list of minimal FVSs." << endl;
-    cerr << "  --max-tree-depth <depth>  Restrict tree level to specified level." << endl;
-    cerr << "  -p or --print-polynomial  Print the list of minimal FVSs as a polynomial." << endl;
-    cerr << "  -s or --print-stat        Print statistics of minimal FVSs." << endl;
+    cerr << "  -h or --help                Print this message and exit." << endl;
+    cerr << "  -n or --no-search           Don't search minimal FVSs (use with -c)." << endl;
+    cerr << "  -c or --print-cycles        Print the reduced set of cycles at the head." << endl;
+    cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
+    cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
+    cerr << "  -p or --print-polynomial    Print the list of minimal FVSs as a polynomial." << endl;
+    cerr << "  -s or --print-stat          Print statistics of minimal FVSs." << endl;
+    cerr << "  -r or --remove-node <node>  Remove nodes of specified name." << endl;
     return 1;
   }
 
@@ -327,6 +334,18 @@ int main(int argc, char** argv){
           cerr << argv[optind] << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
           continue;
         }
+        auto fromrem = find(removenodelist.begin(), removenodelist.end(), from);
+        auto torem = find(removenodelist.begin(), removenodelist.end(), to);
+        if(removenodelist.size() &&
+           (fromrem != removenodelist.end() || torem != removenodelist.end())){
+          if(fromrem != removenodelist.end() &&
+             find(removednodes.begin(), removednodes.end(), from) == removednodes.end())
+            removednodes.push_back(from);
+          if(torem != removenodelist.end() &&
+             find(removednodes.begin(), removednodes.end(), to) == removednodes.end())
+            removednodes.push_back(to);
+          continue;
+        }
         auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
         if(fromno == numnodes)
           addnode(from);
@@ -339,6 +358,21 @@ int main(int argc, char** argv){
       break;
     }
   }
+
+  // print removed nodes by --remove-node
+  if(!removednodes.empty()){
+    cout << "Removed nodes: ";
+    bool first = true;
+    for(auto it = removednodes.begin(); it != removednodes.end(); ++it){
+      if(!first)
+        cout << ", ";
+      else
+        first = false;
+      cout << *it;
+    }
+    cout << endl << endl;
+  }
+
 
   // search cycles
   for(int i = 0; i < numnodes; ++i){
