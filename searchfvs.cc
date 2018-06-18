@@ -352,7 +352,8 @@ int main(int argc, char** argv){
         auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
         if(tono == numnodes)
           addnode(to);
-        edges[fromno].push_back(tono);
+        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end())
+          edges[fromno].push_back(tono);
       }
     } catch (exception e) {
       break;
