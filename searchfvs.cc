@@ -41,8 +41,8 @@ unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appeari
 
 void addandreducecycles(bitset<maxnumnodes>& cycle){
   // add?
-  for(auto it = cycles.begin(); it != cycles.end(); ++it)
-    if((cycle | *it) == cycle)
+  for(const auto& c: cycles)
+    if((cycle | c) == cycle)
       return;
 
   // reduce
@@ -58,17 +58,17 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
 void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
   path.set(i);
   bitset<maxnumnodes> nextsearched = searched;
-  for(auto it = edges[i].begin(); it != edges[i].end(); ++it)
-    nextsearched.set(*it);      // prevent redundant search
+  for(const auto& v: edges[i])
+    nextsearched.set(v);        // prevent redundant search
                                 // E.g., if you have already found the path 0 -> 1,
                                 // then you can omit the path 0 -> 2 -> 1.
   bool endflag = false;
   bool cycleflag = false;
-  for(auto it = edges[i].begin(); it != edges[i].end(); ++it){
-    if(*it == start){
+  for(const auto& v: edges[i]){
+    if(v == start){
       cycleflag = true;
       break;
-    } else if(path[*it]){
+    } else if(path[v]){
       endflag = true; // If a branch returns to the node already passed,
                       // all the results of further search will be redundant cycles.
     }
@@ -78,11 +78,11 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
     if(path.count())
       addandreducecycles(path);
   } else if(!endflag) {
-    for(auto it = edges[i].begin(); it != edges[i].end(); ++it){
-      if(*it < start || searched[*it])
+    for(const auto& v: edges[i]){
+      if(v < start || searched[v])
         continue;
       else
-        detectcycles(start, *it, nextsearched);
+        detectcycles(start, v, nextsearched);
     }
   }
   path.reset(i);
@@ -127,11 +127,11 @@ void outputcycles(){
   cout << "Cycles (reduced):" << endl;
   int n = 1;
   int w = to_string(cycles.size()).length();
-  for(auto it = cycles.begin(); it != cycles.end(); ++it){
+  for(const auto& c: cycles){
     bool first = true;
     cout << setw(w) << n << ": ";
     for(int j = 0; j < numnodes; ++j)
-      if((*it)[j]){
+      if(c[j]){
         if(!first)
           cout << ", ";
         else
@@ -193,14 +193,14 @@ void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int*
   int targetnode = max_element(statFVS, statFVS+maxnumnodes)-statFVS;
   vector<bitset<maxnumnodes>> hFVSs;
   vector<bitset<maxnumnodes>> nFVSs;
-  for(auto it = currentFVSs.begin(); it != currentFVSs.end(); ++it){
-    if((*it)[targetnode]){
-      bitset<maxnumnodes> tmp = *it;
+  for(const auto& c: currentFVSs){
+    if(c[targetnode]){
+      bitset<maxnumnodes> tmp = c;
       tmp.reset(targetnode);
       if(tmp.any())
         hFVSs.push_back(tmp);
     } else
-      nFVSs.push_back(*it);
+      nFVSs.push_back(c);
   }
 
   if(printpolynomial){
@@ -364,12 +364,12 @@ int main(int argc, char** argv){
   if(!removednodes.empty()){
     cout << "Removed nodes: ";
     bool first = true;
-    for(auto it = removednodes.begin(); it != removednodes.end(); ++it){
+    for(const auto& r: removednodes){
       if(!first)
         cout << ", ";
       else
         first = false;
-      cout << *it;
+      cout << r;
     }
     cout << endl << endl;
   }
