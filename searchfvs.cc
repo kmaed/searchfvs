@@ -15,14 +15,17 @@
 
 using namespace std;
 
-const int maxnumnodes = 320;    // the max number of nodes of input network
-                                // If the input network has more nodes,
-                                // increase this value and recompile.
+const int maxnumnodes = 320;    // The max number of nodes of input network.
+                                // If the input network has more nodes, increase this value
+                                // and recompile.
+                                // Developer notes: we can use boost::dynamic_bitset
+                                // as an alternative of std::bitset. However, dynamic_bitset
+                                // is much slower than bitset.
 
 int numnodes;
 vector<string> nodes;
-vector<string> removenodelist; // list of nodes specified by --remove-node
-vector<string> removednodes;   // actually removed nodes
+vector<string> removenodelist; // List of nodes specified by --remove-node .
+vector<string> removednodes;   // Actually removed nodes.
 
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
@@ -88,7 +91,9 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
   path.reset(i);
 }
 
-void search(bitset<maxnumnodes>& selected, unsigned int cyclenum, bitset<maxnumnodes>& searched){
+void search(bitset<maxnumnodes>& selected,
+            unsigned int cyclenum,
+            bitset<maxnumnodes>& searched) {
   bitset<maxnumnodes> nextsearched = searched;
   while(cyclenum < cycles.size()){
     if(!(selected & cycles[cyclenum]).count()){
@@ -124,7 +129,7 @@ void addnode(string node){
 }
 
 void outputcycles(){
-  cout << "Cycles (reduced):" << endl;
+  cout << "#[Cycles (reduced)] = " << cycles.size() << endl;
   int n = 1;
   int w = to_string(cycles.size()).length();
   for(const auto& c: cycles){
@@ -185,7 +190,8 @@ void outputFVSsaspolynomial(){
 }
 
 
-void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int* statFVS, int pnum, int level, bool printpolynomial){
+void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int* statFVS,
+                      int pnum, int level, bool printpolynomial){
   static int prevlevel = -1;
   if(!currentFVSs.size())
     return;
@@ -315,7 +321,7 @@ int main(int argc, char** argv){
   fin.exceptions(ios::failbit);
   try{
     fin.open(argv[optind]);
-  } catch (exception e){
+  } catch (exception& e){
     cerr << argv[0] << ": " << argv[optind] << ": " << strerror(errno) << endl;
     return 1;
   }
@@ -355,7 +361,7 @@ int main(int argc, char** argv){
         if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end())
           edges[fromno].push_back(tono);
       }
-    } catch (exception e) {
+    } catch (exception& e) {
       break;
     }
   }
@@ -376,7 +382,7 @@ int main(int argc, char** argv){
 
 
   // search cycles
-  for(int i = 0; i < numnodes; ++i){
+  for(auto i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
     detectcycles(i, i, searched);
@@ -401,9 +407,11 @@ int main(int argc, char** argv){
       srtnodeind[i] = i;
 
     sort(srtnodeind, srtnodeind+maxnumnodes,
-         [&](unsigned int i, unsigned int j)->bool{return statFVS[i] > statFVS[j];});
+         [&](const unsigned int i, const unsigned int j) {
+           return statFVS[i] > statFVS[j];
+         });
     sort(FVSs.begin(), FVSs.end(),
-         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y)->bool{
+         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y) {
            for(int i = 0; i < numnodes; ++i){
              if(x[srtnodeind[i]] != y[srtnodeind[i]])
                return x[srtnodeind[i]];
