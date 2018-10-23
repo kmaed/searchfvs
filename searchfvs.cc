@@ -15,12 +15,12 @@
 
 using namespace std;
 
-const int maxnumnodes = 320;    // The max number of nodes of input network.
-                                // If the input network has more nodes, increase this value
-                                // and recompile.
-                                // Developer notes: we can use boost::dynamic_bitset
-                                // as an alternative of std::bitset. However, dynamic_bitset
-                                // is much slower than bitset.
+const int maxnumnodes = 10000;   // The max number of nodes of input network.
+                                 // If the input network has more nodes, increase this value
+                                 // and recompile.
+                                 // Developer notes: we can use boost::dynamic_bitset
+                                 // as an alternative of std::bitset. However, dynamic_bitset
+                                 // is much slower than bitset.
 
 int numnodes;
 vector<string> nodes;
