@@ -128,25 +128,27 @@ void addnode(string node){
   }
 }
 
-void outputcycles(){
+void outputcycles(bool nolist){
   cout << "#[cycles (reduced)] = " << cycles.size() << endl;
-  int n = 1;
-  int w = to_string(cycles.size()).length();
-  for(const auto& c: cycles){
-    bool first = true;
-    cout << setw(w) << n << ": ";
-    for(int j = 0; j < numnodes; ++j)
-      if(c[j]){
-        if(!first)
-          cout << ", ";
-        else
-          first = false;
-        cout << nodes[j];
-      }
+  if(!nolist){
+    int n = 1;
+    int w = to_string(cycles.size()).length();
+    for(const auto& c: cycles){
+      bool first = true;
+      cout << setw(w) << n << ": ";
+      for(int j = 0; j < numnodes; ++j)
+        if(c[j]){
+          if(!first)
+            cout << ", ";
+          else
+            first = false;
+          cout << nodes[j];
+        }
+      cout << endl;
+      ++n;
+    }
     cout << endl;
-    ++n;
   }
-  cout << endl;
 }
 
 void calcstatFVS(vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
@@ -253,12 +255,14 @@ void outputstat(const int* statFVS){
 int main(int argc, char** argv){
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
+  bool nolist = false;
   bool printstat = false, printpolynomial = false, printtree = false;
 
   struct option long_options[] =
     {
      {"print-cycles", no_argument, NULL, 'c'},
      {"help", no_argument, NULL, 'h'},
+     {"no-list", no_argument, NULL, 1001},
      {"no-search", no_argument, NULL, 'n'},
      {"print-polynomial", no_argument, NULL, 'p'},
      {"remove-node", required_argument, NULL, 'r'},
@@ -294,6 +298,9 @@ int main(int argc, char** argv){
     case 1000:                  // --max-tree-depth
       maxtreedepth = atoi(optarg);
       break;
+    case 1001:                // --no-list
+      nolist = true;
+      break;
     }
   }
 
@@ -302,6 +309,7 @@ int main(int argc, char** argv){
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
     cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
+    cerr << "  --no-list                    Don't show list of cycles and minimal FVSs." << endl;
     cerr << "  -c or --print-cycles        Print the reduced set of cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
@@ -395,7 +403,7 @@ int main(int argc, char** argv){
 
   // print cycles (if --print-cycles specified)
   if(printcycles)
-    outputcycles();
+    outputcycles(nolist);
 
   // search minimal FVSs
   if(!nosearch){
@@ -421,18 +429,20 @@ int main(int argc, char** argv){
 
     // output
     cout << "#[nodes of minimal FVS] = " << minnumFVS << endl;
-    if(printtree){
-      outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial);
-      cout << endl;
-    }
-    else if(printpolynomial)
-      outputFVSsaspolynomial();
-    else
-      outputFVSs();
+    if(!nolist){
+      if(printtree){
+        outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial);
+        cout << endl;
+      }
+      else if(printpolynomial)
+        outputFVSsaspolynomial();
+      else
+        outputFVSs();
 
-    // print stat. (if --print-stat specified)
-    if(printstat)
-      outputstat(statFVS);
+      // print stat. (if --print-stat specified)
+      if(printstat)
+        outputstat(statFVS);
+    }
   }
 
   return 0;
