@@ -129,7 +129,7 @@ void addnode(string node){
 }
 
 void outputcycles(){
-  cout << "#[Cycles (reduced)] = " << cycles.size() << endl;
+  cout << "#[cycles (reduced)] = " << cycles.size() << endl;
   int n = 1;
   int w = to_string(cycles.size()).length();
   for(const auto& c: cycles){
