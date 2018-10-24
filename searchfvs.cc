@@ -30,7 +30,7 @@ vector<string> removednodes;   // Actually removed nodes.
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
 vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
-                                    // Note: this is "reduced" set.
+                                    // Note: this is the set of "local minimum" cycles.
                                     // E.g., if there are cycles {1101} and {1001},
                                     // only {1001} is included in the cycles variable.
 vector<bitset<maxnumnodes>> FVSs;
@@ -48,7 +48,7 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
     if((cycle | c) == cycle)
       return;
 
-  // reduce
+  // reduce (leave only local minimum cycles)
   for(auto it = cycles.begin(); it != cycles.end(); ){
     if((cycle | *it) == *it)
       it = cycles.erase(it);
@@ -129,7 +129,7 @@ void addnode(string node){
 }
 
 void outputcycles(bool nolist){
-  cout << "#[cycles (reduced)] = " << cycles.size() << endl;
+  cout << "#[cycles (local minimum)] = " << cycles.size() << endl;
   if(!nolist){
     int n = 1;
     int w = to_string(cycles.size()).length();
@@ -309,8 +309,8 @@ int main(int argc, char** argv){
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
     cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
-    cerr << "  --no-list                    Don't show list of cycles and minimal FVSs." << endl;
-    cerr << "  -c or --print-cycles        Print the reduced set of cycles at the head." << endl;
+    cerr << "  --no-list                   Don't show list of cycles and minimal FVSs." << endl;
+    cerr << "  -c or --print-cycles        Print the set of local minimum cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
     cerr << "  -p or --print-polynomial    Print the list of minimal FVSs as a polynomial." << endl;
