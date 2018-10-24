@@ -30,10 +30,9 @@ vector<string> removednodes;   // Actually removed nodes.
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
 vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
-                                    // Note: this is the set of "local minimum" cycles.
+                                    // Note: this is "reduced" set.
                                     // E.g., if there are cycles {1101} and {1001},
                                     // only {1001} is included in the cycles variable.
-vector<bitset<maxnumnodes>> othercycles;
 vector<bitset<maxnumnodes>> FVSs;
 unsigned int minnumFVS = maxnumnodes;
 
@@ -49,14 +48,13 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
     if((cycle | c) == cycle)
       return;
 
-  // reduce (leave only local minimum cycles)
+  // reduce
   for(auto it = cycles.begin(); it != cycles.end(); ){
     if((cycle | *it) == *it)
       it = cycles.erase(it);
     else
       ++it;
   }
-  othercycles.push_back(cycle);
   cycles.push_back(cycle);
 }
 
@@ -130,10 +128,10 @@ void addnode(string node){
   }
 }
 
-void outputcycles(bool nolist, bool showallcycles){
-  cout << "#[cycles (local minimum)] = " << cycles.size() << endl;
-  int n = 1;
+void outputcycles(bool nolist){
+  cout << "#[cycles (reduced)] = " << cycles.size() << endl;
   if(!nolist){
+    int n = 1;
     int w = to_string(cycles.size()).length();
     for(const auto& c: cycles){
       bool first = true;
@@ -150,36 +148,6 @@ void outputcycles(bool nolist, bool showallcycles){
       ++n;
     }
     cout << endl;
-  }
-
-  if(showallcycles){
-    cout << "#[cycles] = " << cycles.size()+othercycles.size() << endl;
-    if(!nolist){
-      int w = to_string(cycles.size()+othercycles.size()).length();
-      for(const auto& c: othercycles){
-        bool first = true;
-        cout << setw(w) << n << ": ";
-        for(int j = 0; j < numnodes; ++j)
-          if(c[j]){
-            if(!first)
-              cout << ", ";
-            else
-              first = false;
-            cout << nodes[j];
-          }
-        cout << " (includes the cycles";
-        for(size_t k = 0; k < cycles.size(); ++k){
-          if((c | cycles[k]) == c){
-            cout << " #" << k+1;
-          }
-        }
-        cout << ")";
-
-        cout << endl;
-        ++n;
-      }
-      cout << endl;
-    }
   }
 }
 
@@ -287,21 +255,20 @@ void outputstat(const int* statFVS){
 int main(int argc, char** argv){
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
-  bool nolist = false, showallcycles = false;
+  bool nolist = false;
   bool printstat = false, printpolynomial = false, printtree = false;
 
   struct option long_options[] =
     {
      {"print-cycles", no_argument, NULL, 'c'},
      {"help", no_argument, NULL, 'h'},
+     {"no-list", no_argument, NULL, 1001},
      {"no-search", no_argument, NULL, 'n'},
      {"print-polynomial", no_argument, NULL, 'p'},
      {"remove-node", required_argument, NULL, 'r'},
      {"print-stat", no_argument, NULL, 's'},
      {"print-tree", no_argument, NULL, 't'},
      {"max-tree-depth", required_argument, NULL, 1000},
-     {"no-list", no_argument, NULL, 1001},
-     {"all-cycles", no_argument, NULL, 1002},
      {0, 0, 0, 0}
     };
 
@@ -331,11 +298,8 @@ int main(int argc, char** argv){
     case 1000:                  // --max-tree-depth
       maxtreedepth = atoi(optarg);
       break;
-    case 1001:                  // --no-list
+    case 1001:                // --no-list
       nolist = true;
-      break;
-    case 1002:                  // --all-cycles
-      showallcycles = true;
       break;
     }
   }
@@ -344,9 +308,8 @@ int main(int argc, char** argv){
     cerr << "Usage: " << argv[0] << " [options] <network file>" << endl;
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
-    cerr << "  --all-cycles                Show the list of all (not only local minimum) cycles (use with --print-cycles)." << endl;
     cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
-    cerr << "  --no-list                   Don't show the list of cycles and minimal FVSs." << endl;
+    cerr << "  --no-list                    Don't show list of cycles and minimal FVSs." << endl;
     cerr << "  -c or --print-cycles        Print the reduced set of cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
@@ -433,17 +396,6 @@ int main(int argc, char** argv){
     detectcycles(i, i, searched);
   }
 
-  if(showallcycles){
-    for(const auto& c: cycles){
-      auto p = find(othercycles.begin(), othercycles.end(), c);
-      othercycles.erase(p);
-    }
-
-    sort(othercycles.begin(), othercycles.end(),
-         [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
-           return x.count() < y.count();
-         });
-  }
   sort(cycles.begin(), cycles.end(),
        [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
          return x.count() < y.count();
@@ -451,7 +403,7 @@ int main(int argc, char** argv){
 
   // print cycles (if --print-cycles specified)
   if(printcycles)
-    outputcycles(nolist, showallcycles);
+    outputcycles(nolist);
 
   // search minimal FVSs
   if(!nosearch){
