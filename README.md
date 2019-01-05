@@ -38,6 +38,10 @@ Since space characters are used as delimiters, the names of nodes should not
 include space characters. If there is a # character at the begin of a line,
 the program ignores the line.
 
+## Related works
+
+* [Kenji Kobayashi, Kazuki Maeda, Miki Tokuoka, Atsushi Mochizuki and Yutaka Satou, Controlling cell fate specification system by key genes determined from network structure, iScience 4 (2018) 281–293](https://doi.org/10.1016/j.isci.2018.05.004).
+
 ## Contact
 
 Kazuki Maeda "kmaeda at kmaeda.net"
