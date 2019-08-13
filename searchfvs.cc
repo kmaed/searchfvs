@@ -1,4 +1,4 @@
-// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2018
+// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2019
 
 #include <iostream>
 #include <iomanip>
@@ -23,6 +23,7 @@ const int maxnumnodes = 10000;   // The max number of nodes of input network.
                                  // is much slower than bitset.
 
 int numnodes;
+int numedges;
 vector<string> nodes;
 vector<string> removenodelist; // List of nodes specified by --remove-node .
 vector<string> removednodes;   // Actually removed nodes.
@@ -366,8 +367,10 @@ int main(int argc, char** argv){
         auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
         if(tono == numnodes)
           addnode(to);
-        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end())
+        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end()){
+          ++numedges;
           edges[fromno].push_back(tono);
+        }
       }
     } catch (exception& e) {
       break;
@@ -428,7 +431,7 @@ int main(int argc, char** argv){
          });
 
     // output
-    cout << "#[nodes of minimal FVS] = " << minnumFVS << endl;
+    cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << endl;
     if(!nolist){
       if(printtree){
         outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial);
