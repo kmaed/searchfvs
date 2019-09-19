@@ -422,7 +422,7 @@ int main(int argc, char** argv){
            return statFVS[i] > statFVS[j];
          });
     sort(FVSs.begin(), FVSs.end(),
-         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y) {
+         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y) -> bool {
            for(int i = 0; i < numnodes; ++i){
              if(x[srtnodeind[i]] != y[srtnodeind[i]])
                return x[srtnodeind[i]];
