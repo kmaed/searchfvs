@@ -75,6 +75,7 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
     } else if(path[v]){
       endflag = true; // If a branch returns to the node already passed,
                       // all the results of further search will be redundant cycles.
+      break;
     }
   }
 
