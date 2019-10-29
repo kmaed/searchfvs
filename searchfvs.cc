@@ -130,7 +130,7 @@ void addnode(string node){
 }
 
 void outputcycles(bool nolist){
-  cout << "#[cycles (local minimum)] = " << cycles.size() << endl;
+  cout << "#[chordless cycles] = " << cycles.size() << endl;
   if(!nolist){
     int n = 1;
     int w = to_string(cycles.size()).length();
@@ -310,8 +310,8 @@ int main(int argc, char** argv){
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
     cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
-    cerr << "  --no-list                   Don't show list of cycles and minimal FVSs." << endl;
-    cerr << "  -c or --print-cycles        Print the set of local minimum cycles at the head." << endl;
+    cerr << "  --no-list                   Don't show list of chordless cycles and minimal FVSs." << endl;
+    cerr << "  -c or --print-cycles        Print the set of chordless cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
     cerr << "  --max-tree-depth <depth>    Restrict tree level to specified level (use with --print-tree)." << endl;
     cerr << "  -p or --print-polynomial    Print the list of minimal FVSs as a polynomial." << endl;
@@ -392,7 +392,7 @@ int main(int argc, char** argv){
   }
 
 
-  // search cycles
+  // search chordless cycles
   for(auto i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
