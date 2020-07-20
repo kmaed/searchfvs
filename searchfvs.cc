@@ -256,6 +256,64 @@ void outputstat(const int* statFVS,
   cout << endl;
 }
 
+int read(string programname, string datname,
+         int& numnodes, int& numedges,
+         vector<string>& nodes, vector<vector<int>>& edges,
+         vector<string>& removenodelist,
+         vector<string>& removednodes){
+  ifstream fin;
+  fin.exceptions(ios::failbit);
+  try{
+    fin.open(datname);
+  } catch (exception& e){
+    cerr << programname << ": " << datname << ": " << strerror(errno) << endl;
+    return 1;
+  }
+
+  int lineno = 0;
+  while(!fin.eof()){
+    try{
+      string tmp;
+      getline(fin, tmp);
+      ++lineno;
+      if(tmp[0] != '#'){
+        string from, to, ill;
+        stringstream ss(tmp);
+        ss >> from >> to >> ill;
+        if(from == "" || to == "" || ill != ""){
+          cerr << datname << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
+          continue;
+        }
+        auto fromrem = find(removenodelist.begin(), removenodelist.end(), from);
+        auto torem = find(removenodelist.begin(), removenodelist.end(), to);
+        if(removenodelist.size() &&
+           (fromrem != removenodelist.end() || torem != removenodelist.end())){
+          if(fromrem != removenodelist.end() &&
+             find(removednodes.begin(), removednodes.end(), from) == removednodes.end())
+            removednodes.push_back(from);
+          if(torem != removenodelist.end() &&
+             find(removednodes.begin(), removednodes.end(), to) == removednodes.end())
+            removednodes.push_back(to);
+          continue;
+        }
+        auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
+        if(fromno == numnodes)
+          addnode(from, numnodes, nodes, edges);
+        auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
+        if(tono == numnodes)
+          addnode(to, numnodes, nodes, edges);
+        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end()){
+          ++numedges;
+          edges[fromno].push_back(tono);
+        }
+      }
+    } catch (exception& e) {
+      break;
+    }
+  }
+  return 0;
+}
+
 int main(int argc, char** argv){
   int numnodes = 0, numedges = 0;
   vector<string> nodes;
@@ -337,56 +395,10 @@ int main(int argc, char** argv){
   edges = vector<vector<int>>();
 
   // read
-  ifstream fin;
-  fin.exceptions(ios::failbit);
-  try{
-    fin.open(argv[optind]);
-  } catch (exception& e){
-    cerr << argv[0] << ": " << argv[optind] << ": " << strerror(errno) << endl;
-    return 1;
-  }
-
-  int lineno = 0;
-  while(!fin.eof()){
-    try{
-      string tmp;
-      getline(fin, tmp);
-      ++lineno;
-      if(tmp[0] != '#'){
-        string from, to, ill;
-        stringstream ss(tmp);
-        ss >> from >> to >> ill;
-        if(from == "" || to == "" || ill != ""){
-          cerr << argv[optind] << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
-          continue;
-        }
-        auto fromrem = find(removenodelist.begin(), removenodelist.end(), from);
-        auto torem = find(removenodelist.begin(), removenodelist.end(), to);
-        if(removenodelist.size() &&
-           (fromrem != removenodelist.end() || torem != removenodelist.end())){
-          if(fromrem != removenodelist.end() &&
-             find(removednodes.begin(), removednodes.end(), from) == removednodes.end())
-            removednodes.push_back(from);
-          if(torem != removenodelist.end() &&
-             find(removednodes.begin(), removednodes.end(), to) == removednodes.end())
-            removednodes.push_back(to);
-          continue;
-        }
-        auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
-        if(fromno == numnodes)
-          addnode(from, numnodes, nodes, edges);
-        auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
-        if(tono == numnodes)
-          addnode(to, numnodes, nodes, edges);
-        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end()){
-          ++numedges;
-          edges[fromno].push_back(tono);
-        }
-      }
-    } catch (exception& e) {
-      break;
-    }
-  }
+  int s = read(argv[0], argv[optind], numnodes, numedges, nodes, edges,
+               removenodelist, removednodes);
+  if(s)
+    return s;
 
   // print removed nodes by --remove-node
   if(!removednodes.empty()){
@@ -401,7 +413,6 @@ int main(int argc, char** argv){
     }
     cout << endl << endl;
   }
-
 
   // search chordless cycles
   vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
