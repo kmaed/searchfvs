@@ -28,13 +28,10 @@ vector<string> removednodes;   // Actually removed nodes.
 
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
-vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
-                                    // Note: this is the set of "local minimum" cycles.
-                                    // E.g., if there are cycles {1101} and {1001},
-                                    // only {1001} is included in the cycles variable.
 vector<bitset<maxnumnodes>> FVSs;
 
-void addandreducecycles(bitset<maxnumnodes>& cycle){
+void addandreducecycles(bitset<maxnumnodes>& cycle,
+                        vector<bitset<maxnumnodes>>& cycles){
   // add?
   for(const auto& c: cycles)
     if((cycle | c) == cycle)
@@ -50,7 +47,9 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
   cycles.push_back(cycle);
 }
 
-void detectcycles(int start, int i, bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path){
+void detectcycles(int start, int i,
+                  bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path,
+                  vector<bitset<maxnumnodes>>& cycles){
   path.set(i);
   bitset<maxnumnodes> nextsearched = searched;
   for(const auto& v: edges[i])
@@ -72,19 +71,20 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched, bitset<maxnum
 
   if(cycleflag){
     if(path.count())
-      addandreducecycles(path);
+      addandreducecycles(path, cycles);
   } else if(!endflag) {
     for(const auto& v: edges[i]){
       if(v < start || searched[v])
         continue;
       else
-        detectcycles(start, v, nextsearched, path);
+        detectcycles(start, v, nextsearched, path, cycles);
     }
   }
   path.reset(i);
 }
 
-void search(bitset<maxnumnodes>& selected,
+void search(vector<bitset<maxnumnodes>>& cycles,
+            bitset<maxnumnodes>& selected,
             unsigned int cyclenum,
             bitset<maxnumnodes>& searched,
             const int numnodes,
@@ -98,7 +98,7 @@ void search(bitset<maxnumnodes>& selected,
         if(cycles[cyclenum][i] && !nextsearched[i]){
           selected.set(i);
           nextsearched.set(i);   // prevent duplicate listing
-          search(selected, cyclenum+1, nextsearched, numnodes, minnumFVS);
+          search(cycles, selected, cyclenum+1, nextsearched, numnodes, minnumFVS);
           selected.reset(i);
         }
       return;
@@ -123,7 +123,7 @@ void addnode(string node, int& numnodes){
   }
 }
 
-void outputcycles(bool nolist, const int numnodes){
+void outputcycles(bool nolist, const int numnodes, vector<bitset<maxnumnodes>>& cycles){
   cout << "#[chordless cycles] = " << cycles.size() << endl;
   if(!nolist){
     int n = 1;
@@ -396,11 +396,15 @@ int main(int argc, char** argv){
 
 
   // search chordless cycles
+  vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
+                                // Note: this is the set of "local minimum" cycles (chordless cycles).
+                                // E.g., if there are cycles {1101} and {1001},
+                                // only {1001} is included in the cycles variable.
   bitset<maxnumnodes> path;
   for(auto i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
-    detectcycles(i, i, searched, path);
+    detectcycles(i, i, searched, path, cycles);
   }
 
   sort(cycles.begin(), cycles.end(),
@@ -410,13 +414,13 @@ int main(int argc, char** argv){
 
   // print cycles (if --print-cycles specified)
   if(printcycles)
-    outputcycles(nolist, numnodes);
+    outputcycles(nolist, numnodes, cycles);
 
   // search minimal FVSs
   unsigned int minnumFVS = maxnumnodes;
   if(!nosearch){
     bitset<maxnumnodes> selected, searched;
-    search(selected, 0, searched, numnodes, minnumFVS);
+    search(cycles, selected, 0, searched, numnodes, minnumFVS);
     int statFVS[maxnumnodes];
     calcstatFVS(FVSs, statFVS);
     for(int i = 0; i < maxnumnodes; ++i)
