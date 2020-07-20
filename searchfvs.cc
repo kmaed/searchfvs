@@ -39,8 +39,8 @@ void addandreducecycles(bitset<maxnumnodes>& cycle,
   cycles.push_back(cycle);
 }
 
-void detectcycles(int start, int i,
-                  bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path,
+void detectcycles(const int start, const int i,
+                  const bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path,
                   const vector<vector<int>>& edges,
                   vector<bitset<maxnumnodes>>& cycles){
   path.set(i);
@@ -106,7 +106,8 @@ void search(vector<bitset<maxnumnodes>>& cycles,
   FVSs.push_back(selected);
 }
 
-void addnode(const string node, int& numnodes, vector<string>& nodes, vector<vector<int>>& edges){
+void addnode(const string node,
+             int& numnodes, vector<string>& nodes, vector<vector<int>>& edges){
   nodes.push_back(node);
   edges.push_back(vector<int>());
   ++numnodes;
@@ -117,7 +118,7 @@ void addnode(const string node, int& numnodes, vector<string>& nodes, vector<vec
   }
 }
 
-void outputcycles(bool nolist, const int numnodes,
+void outputcycles(const bool nolist, const int numnodes,
                   const vector<string>& nodes,
                   const vector<bitset<maxnumnodes>>& cycles){
   cout << "#[chordless cycles] = " << cycles.size() << endl;
@@ -142,7 +143,7 @@ void outputcycles(bool nolist, const int numnodes,
   }
 }
 
-void calcstatFVS(vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
+void calcstatFVS(const vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
   for(int i = 0; i < maxnumnodes; ++i)
     statFVS[i] = count_if(listFVSs.begin(), listFVSs.end(),
                           [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
@@ -193,7 +194,8 @@ void outputFVSsaspolynomial(const int numnodes,
 
 void outputFVSsastree(const vector<string>& nodes,
                       const vector<bitset<maxnumnodes>>& currentFVSs, const int* statFVS,
-                      int pnum, int level, bool printpolynomial, const int maxtreedepth){
+                      const int pnum, const int level,
+                      const bool printpolynomial, const int maxtreedepth){
   static int prevlevel = -1;
   if(!currentFVSs.size())
     return;
@@ -256,7 +258,7 @@ void outputstat(const int* statFVS,
   cout << endl;
 }
 
-int read(string programname, string datname,
+int read(const string programname, const string datname,
          int& numnodes, int& numedges,
          vector<string>& nodes, vector<vector<int>>& edges,
          vector<string>& removenodelist,
