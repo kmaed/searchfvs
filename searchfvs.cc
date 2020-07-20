@@ -1,4 +1,4 @@
-// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2019
+// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2020
 
 #include <iostream>
 #include <iomanip>
@@ -33,11 +33,6 @@ vector<bitset<maxnumnodes>> cycles; // cycles[i][j]: if node j is in cycle i
                                     // E.g., if there are cycles {1101} and {1001},
                                     // only {1001} is included in the cycles variable.
 vector<bitset<maxnumnodes>> FVSs;
-unsigned int minnumFVS = maxnumnodes;
-
-int maxtreedepth = maxnumnodes; // used by outputFVSsastree
-
-bitset<maxnumnodes> path;       // for detectcycles()
 
 void addandreducecycles(bitset<maxnumnodes>& cycle){
   // add?
@@ -55,7 +50,7 @@ void addandreducecycles(bitset<maxnumnodes>& cycle){
   cycles.push_back(cycle);
 }
 
-void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
+void detectcycles(int start, int i, bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path){
   path.set(i);
   bitset<maxnumnodes> nextsearched = searched;
   for(const auto& v: edges[i])
@@ -83,7 +78,7 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
       if(v < start || searched[v])
         continue;
       else
-        detectcycles(start, v, nextsearched);
+        detectcycles(start, v, nextsearched, path);
     }
   }
   path.reset(i);
@@ -92,7 +87,8 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
 void search(bitset<maxnumnodes>& selected,
             unsigned int cyclenum,
             bitset<maxnumnodes>& searched,
-            const int numnodes) {
+            const int numnodes,
+            unsigned int& minnumFVS) {
   bitset<maxnumnodes> nextsearched = searched;
   while(cyclenum < cycles.size()){
     if(!(selected & cycles[cyclenum]).count()){
@@ -102,7 +98,7 @@ void search(bitset<maxnumnodes>& selected,
         if(cycles[cyclenum][i] && !nextsearched[i]){
           selected.set(i);
           nextsearched.set(i);   // prevent duplicate listing
-          search(selected, cyclenum+1, nextsearched, numnodes);
+          search(selected, cyclenum+1, nextsearched, numnodes, minnumFVS);
           selected.reset(i);
         }
       return;
@@ -156,7 +152,9 @@ void calcstatFVS(vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
                           [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
 }
 
-void outputFVSs(const int numnodes, const unsigned int* srtnodeind){
+void outputFVSs(const int numnodes,
+                const unsigned int* srtnodeind,
+                const unsigned int minnumFVS){
   int w = to_string(FVSs.size()).length();
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     cout << setw(w) << i+1 << ": ";
@@ -173,7 +171,9 @@ void outputFVSs(const int numnodes, const unsigned int* srtnodeind){
   cout << endl;
 }
 
-void outputFVSsaspolynomial(const int numnodes, const unsigned int* srtnodeind){
+void outputFVSsaspolynomial(const int numnodes,
+                            const unsigned int* srtnodeind,
+                            const unsigned int minnumFVS){
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     unsigned int tmp = 1;
     for(int j = 0; j < numnodes; ++j)
@@ -192,7 +192,7 @@ void outputFVSsaspolynomial(const int numnodes, const unsigned int* srtnodeind){
 
 
 void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int* statFVS,
-                      int pnum, int level, bool printpolynomial){
+                      int pnum, int level, bool printpolynomial, const int maxtreedepth){
   static int prevlevel = -1;
   if(!currentFVSs.size())
     return;
@@ -232,10 +232,10 @@ void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int*
     calcstatFVS(nFVSs, statnFVSs);
 
   if(printpolynomial || level+1 < maxtreedepth)
-    outputFVSsastree(hFVSs, stathFVSs, hFVSs.size(), level+1, printpolynomial);
+    outputFVSsastree(hFVSs, stathFVSs, hFVSs.size(), level+1, printpolynomial, maxtreedepth);
   if(printpolynomial && hFVSs.size() != 0)
     cout << ")";
-  outputFVSsastree(nFVSs, statnFVSs, pnum, level, printpolynomial);
+  outputFVSsastree(nFVSs, statnFVSs, pnum, level, printpolynomial, maxtreedepth);
 }
 
 void outputstat(const int* statFVS, const int numnodes, const unsigned int* srtnodeind){
@@ -255,10 +255,13 @@ int main(int argc, char** argv){
   int numnodes = 0, numedges = 0;
   unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
 
+
+
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
   bool nolist = false;
   bool printstat = false, printpolynomial = false, printtree = false;
+  int maxtreedepth = maxnumnodes; // used by outputFVSsastree
 
   struct option long_options[] =
     {
@@ -393,6 +396,7 @@ int main(int argc, char** argv){
 
 
   // search chordless cycles
+  bitset<maxnumnodes> path;
   for(auto i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
@@ -409,9 +413,10 @@ int main(int argc, char** argv){
     outputcycles(nolist, numnodes);
 
   // search minimal FVSs
+  unsigned int minnumFVS = maxnumnodes;
   if(!nosearch){
     bitset<maxnumnodes> selected, searched;
-    search(selected, 0, searched, numnodes);
+    search(selected, 0, searched, numnodes, minnumFVS);
     int statFVS[maxnumnodes];
     calcstatFVS(FVSs, statFVS);
     for(int i = 0; i < maxnumnodes; ++i)
@@ -434,13 +439,13 @@ int main(int argc, char** argv){
     cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << endl;
     if(!nolist){
       if(printtree){
-        outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial);
+        outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial, maxtreedepth);
         cout << endl;
       }
       else if(printpolynomial)
-        outputFVSsaspolynomial(numnodes, srtnodeind);
+        outputFVSsaspolynomial(numnodes, srtnodeind, minnumFVS);
       else
-        outputFVSs(numnodes, srtnodeind);
+        outputFVSs(numnodes, srtnodeind, minnumFVS);
 
       // print stat. (if --print-stat specified)
       if(printstat)
