@@ -400,7 +400,7 @@ int main(int argc, char** argv){
   for(auto i = 0; i < numnodes; ++i){
     bitset<maxnumnodes> searched;
     searched.set(i);
-    detectcycles(i, i, searched);
+    detectcycles(i, i, searched, path);
   }
 
   sort(cycles.begin(), cycles.end(),
