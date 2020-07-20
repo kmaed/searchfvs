@@ -21,11 +21,7 @@ const int maxnumnodes = 10000;   // The max number of nodes of input network.
                                  // Developer notes: we can use boost::dynamic_bitset
                                  // as an alternative of std::bitset. However, dynamic_bitset
                                  // is much slower than bitset.
-
 vector<string> nodes;
-vector<string> removenodelist; // List of nodes specified by --remove-node .
-vector<string> removednodes;   // Actually removed nodes.
-
 vector<vector<int>> edges;      // edges[i] = {j0, j1, j2, ...}: i -> j
 
 void addandreducecycles(bitset<maxnumnodes>& cycle,
@@ -259,13 +255,14 @@ int main(int argc, char** argv){
   int numnodes = 0, numedges = 0;
   unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
 
-
-
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
   bool nolist = false;
   bool printstat = false, printpolynomial = false, printtree = false;
   int maxtreedepth = maxnumnodes; // used by outputFVSsastree
+  vector<string> removenodelist; // List of nodes specified by --remove-node .
+  vector<string> removednodes;   // Actually removed nodes.
+
 
   struct option long_options[] =
     {
