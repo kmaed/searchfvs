@@ -22,8 +22,6 @@ const int maxnumnodes = 10000;   // The max number of nodes of input network.
                                  // as an alternative of std::bitset. However, dynamic_bitset
                                  // is much slower than bitset.
 
-int numnodes;
-int numedges;
 vector<string> nodes;
 vector<string> removenodelist; // List of nodes specified by --remove-node .
 vector<string> removednodes;   // Actually removed nodes.
@@ -40,8 +38,6 @@ unsigned int minnumFVS = maxnumnodes;
 int maxtreedepth = maxnumnodes; // used by outputFVSsastree
 
 bitset<maxnumnodes> path;       // for detectcycles()
-
-unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
 
 void addandreducecycles(bitset<maxnumnodes>& cycle){
   // add?
@@ -95,7 +91,8 @@ void detectcycles(int start, int i, bitset<maxnumnodes>& searched){
 
 void search(bitset<maxnumnodes>& selected,
             unsigned int cyclenum,
-            bitset<maxnumnodes>& searched) {
+            bitset<maxnumnodes>& searched,
+            const int numnodes) {
   bitset<maxnumnodes> nextsearched = searched;
   while(cyclenum < cycles.size()){
     if(!(selected & cycles[cyclenum]).count()){
@@ -105,7 +102,7 @@ void search(bitset<maxnumnodes>& selected,
         if(cycles[cyclenum][i] && !nextsearched[i]){
           selected.set(i);
           nextsearched.set(i);   // prevent duplicate listing
-          search(selected, cyclenum+1, nextsearched);
+          search(selected, cyclenum+1, nextsearched, numnodes);
           selected.reset(i);
         }
       return;
@@ -119,7 +116,7 @@ void search(bitset<maxnumnodes>& selected,
   FVSs.push_back(selected);
 }
 
-void addnode(string node){
+void addnode(string node, int& numnodes){
   nodes.push_back(node);
   edges.push_back(vector<int>());
   ++numnodes;
@@ -130,7 +127,7 @@ void addnode(string node){
   }
 }
 
-void outputcycles(bool nolist){
+void outputcycles(bool nolist, const int numnodes){
   cout << "#[chordless cycles] = " << cycles.size() << endl;
   if(!nolist){
     int n = 1;
@@ -159,7 +156,7 @@ void calcstatFVS(vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
                           [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
 }
 
-void outputFVSs(){
+void outputFVSs(const int numnodes, const unsigned int* srtnodeind){
   int w = to_string(FVSs.size()).length();
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     cout << setw(w) << i+1 << ": ";
@@ -176,7 +173,7 @@ void outputFVSs(){
   cout << endl;
 }
 
-void outputFVSsaspolynomial(){
+void outputFVSsaspolynomial(const int numnodes, const unsigned int* srtnodeind){
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     unsigned int tmp = 1;
     for(int j = 0; j < numnodes; ++j)
@@ -241,7 +238,7 @@ void outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs, const int*
   outputFVSsastree(nFVSs, statnFVSs, pnum, level, printpolynomial);
 }
 
-void outputstat(const int* statFVS){
+void outputstat(const int* statFVS, const int numnodes, const unsigned int* srtnodeind){
   int ws = max_element(nodes.begin(), nodes.end(),
                       [](string& x, string& y)->bool{return x.length() < y.length();})->length();
   int w = to_string(FVSs.size()).length();
@@ -255,6 +252,9 @@ void outputstat(const int* statFVS){
 }
 
 int main(int argc, char** argv){
+  int numnodes = 0, numedges = 0;
+  unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
+
   int opt, longindex;
   bool printcycles = false, printhelp = false, nosearch = false;
   bool nolist = false;
@@ -322,7 +322,6 @@ int main(int argc, char** argv){
   }
 
   // init
-  numnodes = 0;
   nodes = vector<string>();
   edges = vector<vector<int>>();
 
@@ -364,10 +363,10 @@ int main(int argc, char** argv){
         }
         auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
         if(fromno == numnodes)
-          addnode(from);
+          addnode(from, numnodes);
         auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
         if(tono == numnodes)
-          addnode(to);
+          addnode(to, numnodes);
         if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end()){
           ++numedges;
           edges[fromno].push_back(tono);
@@ -407,12 +406,12 @@ int main(int argc, char** argv){
 
   // print cycles (if --print-cycles specified)
   if(printcycles)
-    outputcycles(nolist);
+    outputcycles(nolist, numnodes);
 
   // search minimal FVSs
   if(!nosearch){
     bitset<maxnumnodes> selected, searched;
-    search(selected, 0, searched);
+    search(selected, 0, searched, numnodes);
     int statFVS[maxnumnodes];
     calcstatFVS(FVSs, statFVS);
     for(int i = 0; i < maxnumnodes; ++i)
@@ -423,7 +422,7 @@ int main(int argc, char** argv){
            return statFVS[i] > statFVS[j];
          });
     sort(FVSs.begin(), FVSs.end(),
-         [](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y) -> bool {
+         [&](const bitset<maxnumnodes>& x, const bitset<maxnumnodes>& y) -> bool {
            for(int i = 0; i < numnodes; ++i){
              if(x[srtnodeind[i]] != y[srtnodeind[i]])
                return x[srtnodeind[i]];
@@ -439,13 +438,13 @@ int main(int argc, char** argv){
         cout << endl;
       }
       else if(printpolynomial)
-        outputFVSsaspolynomial();
+        outputFVSsaspolynomial(numnodes, srtnodeind);
       else
-        outputFVSs();
+        outputFVSs(numnodes, srtnodeind);
 
       // print stat. (if --print-stat specified)
       if(printstat)
-        outputstat(statFVS);
+        outputstat(statFVS, numnodes, srtnodeind);
     }
   }
 
