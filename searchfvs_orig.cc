@@ -1,10 +1,11 @@
-// searchfvs_orig.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
+// searchfvs_orig.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2020
 
 #include <bitset>
 #include "searchfvs_common.hh"
 
 using namespace std;
 
+// Solve exact cover problem by simple DFS.
 void search_body(vector<bitset<maxnumnodes>>& cycles,
                  const int numnodes,
                  vector<bitset<maxnumnodes>>& FVSs,

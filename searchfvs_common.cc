@@ -15,7 +15,7 @@
 
 using namespace std;
 
-void addandreducecycles(bitset<maxnumnodes>& cycle,
+void addandreducecycles(const bitset<maxnumnodes>& cycle,
                         vector<bitset<maxnumnodes>>& cycles){
   // add?
   for(const auto& c: cycles)
@@ -156,9 +156,12 @@ void outputFVSsaspolynomial(const int numnodes,
 
 
 void outputFVSsastree(const vector<string>& nodes,
-                      const vector<bitset<maxnumnodes>>& currentFVSs, const int* statFVS,
-                      const int pnum, const int level,
-                      const bool printpolynomial, const int maxtreedepth){
+                      const vector<bitset<maxnumnodes>>& currentFVSs,
+                      const int* statFVS,
+                      const int pnum,
+                      const int level,
+                      const bool printpolynomial,
+                      const int maxtreedepth){
   static int prevlevel = -1;
   if(!currentFVSs.size())
     return;
@@ -206,11 +209,11 @@ void outputFVSsastree(const vector<string>& nodes,
 
 void outputstat(const int* statFVS,
                 const int numnodes,
-                vector<string>& nodes,
+                const vector<string>& nodes,
                 const vector<bitset<maxnumnodes>>& FVSs,
                 const unsigned int* srtnodeind){
   int ws = max_element(nodes.begin(), nodes.end(),
-                      [](string& x, string& y)->bool{return x.length() < y.length();})->length();
+                      [](const string& x, const string& y)->bool{return x.length() < y.length();})->length();
   int w = to_string(FVSs.size()).length();
   cout << "Statistics:" << endl;
   for(int i = 0; i < numnodes; ++i)
