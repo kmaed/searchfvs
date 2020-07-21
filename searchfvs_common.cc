@@ -1,26 +1,19 @@
-// searchfvs.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2020
+// searchfvs_common.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2017-2020
 
 #include <iostream>
 #include <iomanip>
-#include <vector>
 #include <string>
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
 #include <sstream>
-#include <bitset>
 #include <algorithm>
 #include <errno.h>
 #include <getopt.h>
 
-using namespace std;
+#include "searchfvs_common.hh"
 
-const int maxnumnodes = 10000;   // The max number of nodes of input network.
-                                 // If the input network has more nodes, increase this value
-                                 // and recompile.
-                                 // Developer notes: we can use boost::dynamic_bitset
-                                 // as an alternative of std::bitset. However, dynamic_bitset
-                                 // is much slower than bitset.
+using namespace std;
 
 void addandreducecycles(bitset<maxnumnodes>& cycle,
                         vector<bitset<maxnumnodes>>& cycles){
@@ -74,36 +67,6 @@ void detectcycles(const int start, const int i,
     }
   }
   path.reset(i);
-}
-
-void search(vector<bitset<maxnumnodes>>& cycles,
-            bitset<maxnumnodes>& selected,
-            unsigned int cyclenum,
-            bitset<maxnumnodes>& searched,
-            const int numnodes,
-            vector<bitset<maxnumnodes>>& FVSs,
-            unsigned int& minnumFVS) {
-  bitset<maxnumnodes> nextsearched = searched;
-  while(cyclenum < cycles.size()){
-    if(!(selected & cycles[cyclenum]).count()){
-      if(selected.count() == minnumFVS)
-        return;
-      for(int i = 0; i < numnodes; ++i)
-        if(cycles[cyclenum][i] && !nextsearched[i]){
-          selected.set(i);
-          nextsearched.set(i);   // prevent duplicate listing
-          search(cycles, selected, cyclenum+1, nextsearched, numnodes, FVSs, minnumFVS);
-          selected.reset(i);
-        }
-      return;
-    } else
-      ++cyclenum;
-  }
-  if(selected.count() < minnumFVS){
-    minnumFVS = selected.count();
-    FVSs.clear();
-  }
-  FVSs.push_back(selected);
 }
 
 void addnode(const string node,
@@ -441,8 +404,7 @@ int main(int argc, char** argv){
   unsigned int minnumFVS = maxnumnodes;
   vector<bitset<maxnumnodes>> FVSs;
   if(!nosearch){
-    bitset<maxnumnodes> selected, searched;
-    search(cycles, selected, 0, searched, numnodes, FVSs, minnumFVS);
+    search(cycles, numnodes, FVSs, minnumFVS);
     int statFVS[maxnumnodes];
     calcstatFVS(FVSs, statFVS);
     for(int i = 0; i < maxnumnodes; ++i)
