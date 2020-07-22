@@ -16,7 +16,7 @@
 using namespace std;
 
 // Solve exact cover problem by simple DFS.
-void search_rec(vector<bitset<maxnumnodes>>& cycles,
+void dfs(vector<bitset<maxnumnodes>>& cycles,
                 const int numnodes,
                 vector<bitset<maxnumnodes>>& FVSs,
                 unsigned int& minnumFVS,
@@ -32,7 +32,7 @@ void search_rec(vector<bitset<maxnumnodes>>& cycles,
         if(cycles[cyclenum][i] && !nextsearched[i]){
           selected.set(i);
           nextsearched.set(i);   // prevent duplicate listing
-          search_rec(cycles, numnodes, FVSs, minnumFVS, cyclenum+1, selected, nextsearched);
+          dfs(cycles, numnodes, FVSs, minnumFVS, cyclenum+1, selected, nextsearched);
           selected.reset(i);
         }
       return;
@@ -256,6 +256,10 @@ void outputstat(const int* statFVS,
   cout << endl;
 }
 
+inline void outputheader(const int numnodes, const int numedges, const int minnumFVS){
+  cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << endl;
+}
+
 int read(const string programname, const string datname,
          int& numnodes, int& numedges,
          vector<string>& nodes, vector<vector<int>>& edges,
@@ -439,7 +443,12 @@ int main(int argc, char** argv){
   unsigned int minnumFVS = maxnumnodes;
   vector<bitset<maxnumnodes>> FVSs;
   if(!nosearch){
-    search(cycles, numnodes, FVSs, minnumFVS);
+    bitset<maxnumnodes> FVS, selected, searched;
+    if(calcminnumFVS){
+      calcminnumFVS(cycles, numnodes, minnumFVS, FVS);
+      outputheader(numnodes, numedges, minnumFVS);
+    }
+    dfs(cycles, numnodes, FVSs, minnumFVS, 0, selected, searched);
     int statFVS[maxnumnodes];
     calcstatFVS(FVSs, statFVS);
     for(int i = 0; i < maxnumnodes; ++i)
@@ -459,7 +468,8 @@ int main(int argc, char** argv){
          });
 
     // output
-    cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << endl;
+    if(!calcminnumFVS)
+      outputheader(numnodes, numedges, minnumFVS);
     if(!nolist){
       if(printtree){
         outputFVSsastree(nodes, FVSs, statFVS, FVSs.size(), 0, printpolynomial, maxtreedepth);

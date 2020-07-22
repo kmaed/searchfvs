@@ -8,10 +8,10 @@
 using namespace std;
 
 // Solve exact cover problem by COINOR CBC solver.
-void search(vector<bitset<maxnumnodes>>& cycles,
-            const int numnodes,
-            vector<bitset<maxnumnodes>>& FVSs,
-            unsigned int& minnumFVS){
+void _calcminnumFVS(vector<bitset<maxnumnodes>>& cycles,
+                    const int numnodes,
+                    unsigned int& minnumFVS,
+                    bitset<maxnumnodes>& FVS){
   // construct the coefficient matrix of ILP
   vector<int> rowinds, colinds;
   vector<double> els;
@@ -67,15 +67,15 @@ void search(vector<bitset<maxnumnodes>>& cycles,
   minnumFVS = model.getObjValue();
 
   // Is there any way to get all solutions by CBC?
-  // Here, do DFS by using information of minnumFVS.
-  bitset<maxnumnodes> selected, searched;
-  search_rec(cycles, numnodes, FVSs, minnumFVS, 0, selected, searched);
-
-  /* The code below will give only one solution. */
-  // const double *solution = model.getColSolution();
-  // bitset<maxnumnodes> FVS;
-  // for(auto j = 0; j < numcols; ++j)
-  //   if(solution[j])
-  //     FVS.set(j);
-  // FVSs.push_back(FVS);
+  // The code below will give only one solution.
+  const double *solution = model.getColSolution();
+  FVS.reset();
+  for(auto j = 0; j < numcols; ++j)
+    if(solution[j])
+      FVS.set(j);
 }
+
+void (*calcminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
+                      const int numnodes,
+                      unsigned int& minnumFVS,
+                      bitset<maxnumnodes>& FVS) = _calcminnumFVS;
