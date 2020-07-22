@@ -1,4 +1,4 @@
-// searchfvs_common.hh, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
+// searchfvs.hh, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
 
 #ifndef _SEARCHFVS_COMMON_HH_
 #define _SEARCHFVS_COMMON_HH_

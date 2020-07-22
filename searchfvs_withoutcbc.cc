@@ -1,4 +1,4 @@
-// searchfvs_orig.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
+// searchfvs_withoutcbc.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
 
 #include "searchfvs.hh"
 
