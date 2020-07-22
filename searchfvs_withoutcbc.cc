@@ -5,6 +5,6 @@
 using namespace std;
 
 void (*computeminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
-                      const int numnodes,
-                      unsigned int& minnumFVS,
-                      bitset<maxnumnodes>& FVS) = NULL;
+                         const int numnodes,
+                         unsigned int& minnumFVS,
+                         bitset<maxnumnodes>& FVS) = NULL;

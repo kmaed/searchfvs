@@ -459,7 +459,7 @@ int main(int argc, char** argv){
     if(computeminnumFVS){
       computeminnumFVS(cycles, numnodes, minnumFVS, FVS);
       outputheader(numnodes, numedges, minnumFVS);
-      if(onlycomputemin){
+      if(!nolist && onlycomputemin){
         unsigned int tmp = 1;
         cout << "A minimal FVS: ";
         for(int i = 0; i < numnodes; ++i)

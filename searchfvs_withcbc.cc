@@ -9,9 +9,9 @@ using namespace std;
 
 // Solve set cover problem by COINOR Cbc solver.
 void _computeminnumFVS(vector<bitset<maxnumnodes>>& cycles,
-                    const int numnodes,
-                    unsigned int& minnumFVS,
-                    bitset<maxnumnodes>& FVS){
+                       const int numnodes,
+                       unsigned int& minnumFVS,
+                       bitset<maxnumnodes>& FVS){
   // construct the coefficient matrix of ILP
   vector<int> rowinds, colinds;
   vector<double> els;
@@ -63,6 +63,8 @@ void _computeminnumFVS(vector<bitset<maxnumnodes>>& cycles,
   model.solver()->setHintParam(OsiDoReducePrint);
   // solve ILP
   model.branchAndBound();
+
+  // Warning: error check should be inserted here
 
   minnumFVS = model.getObjValue();
 
