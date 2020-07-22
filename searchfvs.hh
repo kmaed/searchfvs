@@ -13,6 +13,14 @@ constexpr int maxnumnodes = 10000; // The max number of nodes of input network.
                                    // as an alternative of std::bitset. However, dynamic_bitset
                                    // is much slower than bitset.
 
+void search_rec(std::vector<std::bitset<maxnumnodes>>& cycles,
+                const int numnodes,
+                std::vector<std::bitset<maxnumnodes>>& FVSs,
+                unsigned int& minnumFVS,
+                unsigned int cyclenum,
+                std::bitset<maxnumnodes>& selected,
+                std::bitset<maxnumnodes>& searched);
+
 void search(std::vector<std::bitset<maxnumnodes>>& cycles,
             const int numnodes,
             std::vector<std::bitset<maxnumnodes>>& FVSs,

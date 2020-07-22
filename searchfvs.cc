@@ -11,9 +11,40 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include "searchfvs_common.hh"
+#include "searchfvs.hh"
 
 using namespace std;
+
+// Solve exact cover problem by simple DFS.
+void search_rec(vector<bitset<maxnumnodes>>& cycles,
+                const int numnodes,
+                vector<bitset<maxnumnodes>>& FVSs,
+                unsigned int& minnumFVS,
+                unsigned int cyclenum,
+                bitset<maxnumnodes>& selected,
+                bitset<maxnumnodes>& searched) {
+  bitset<maxnumnodes> nextsearched = searched;
+  while(cyclenum < cycles.size()){
+    if(!(selected & cycles[cyclenum]).count()){ // already covered?
+      if(selected.count() == minnumFVS)
+        return;
+      for(int i = 0; i < numnodes; ++i)
+        if(cycles[cyclenum][i] && !nextsearched[i]){
+          selected.set(i);
+          nextsearched.set(i);   // prevent duplicate listing
+          search_rec(cycles, numnodes, FVSs, minnumFVS, cyclenum+1, selected, nextsearched);
+          selected.reset(i);
+        }
+      return;
+    } else
+      ++cyclenum;
+  }
+  if(selected.count() < minnumFVS){
+    minnumFVS = selected.count();
+    FVSs.clear();
+  }
+  FVSs.push_back(selected);
+}
 
 void addandreducecycles(const bitset<maxnumnodes>& cycle,
                         vector<bitset<maxnumnodes>>& cycles){
@@ -33,7 +64,8 @@ void addandreducecycles(const bitset<maxnumnodes>& cycle,
 }
 
 void detectcycles(const int start, const int i,
-                  const bitset<maxnumnodes>& searched, bitset<maxnumnodes>& path,
+                  const bitset<maxnumnodes>& searched,
+                  bitset<maxnumnodes>& path,
                   const vector<vector<int>>& edges,
                   vector<bitset<maxnumnodes>>& cycles){
   path.set(i);
