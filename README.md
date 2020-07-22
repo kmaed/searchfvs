@@ -12,7 +12,7 @@ Type
 Then the binary `searchfvs` will be generated. This binary does not depend on
 any external libraries.
 
-If [COIN-OR CBC solver](https://github.com/coin-or/Cbc) is installed on your computer,
+If [COIN-OR Cbc solver](https://github.com/coin-or/Cbc) is installed on your computer,
 type
 
     $ make searchfvs_withcbc
@@ -22,8 +22,8 @@ or simply
     $ make
 
 Then the binary `searchfvs_withcbc` will be generated.
-This version is a bit faster than the &quot;without CBC&quot; version
-thanks to finding a solution of a set cover problem as ILP by CBC solver.
+This version is a bit faster than the &quot;without Cbc&quot; version
+thanks to finding a solution of a set cover problem as ILP by Cbc solver.
 
 ## Usage
 
