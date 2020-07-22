@@ -13,9 +13,9 @@ constexpr int maxnumnodes = 10000; // The max number of nodes of input network.
                                    // as an alternative of std::bitset. However, dynamic_bitset
                                    // is much slower than bitset.
 
-extern void (*calcminnumFVS)(std::vector<std::bitset<maxnumnodes>>& cycles,
-                             const int numnodes,
-                             unsigned int& minnumFVS,
-                             std::bitset<maxnumnodes>& FVS);
+extern void (*computeminnumFVS)(std::vector<std::bitset<maxnumnodes>>& cycles,
+                                const int numnodes,
+                                unsigned int& minnumFVS,
+                                std::bitset<maxnumnodes>& FVS);
 
 #endif

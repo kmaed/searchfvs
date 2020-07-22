@@ -329,6 +329,7 @@ int main(int argc, char** argv){
   bool nolist = false;
   bool printstat = false, printpolynomial = false, printtree = false;
   int maxtreedepth = maxnumnodes; // used by outputFVSsastree
+  bool onlycomputemin = false;
   vector<string> removenodelist; // List of nodes specified by --remove-node .
   vector<string> removednodes;   // Actually removed nodes.
 
@@ -344,6 +345,7 @@ int main(int argc, char** argv){
      {"print-stat", no_argument, NULL, 's'},
      {"print-tree", no_argument, NULL, 't'},
      {"max-tree-depth", required_argument, NULL, 1000},
+     {"only-compute-min", no_argument, NULL, 1002},
      {0, 0, 0, 0}
     };
 
@@ -376,6 +378,14 @@ int main(int argc, char** argv){
     case 1001:                // --no-list
       nolist = true;
       break;
+    case 1002:                // --only-compute-min
+      if(computeminnumFVS)
+        onlycomputemin = true;
+      else {
+        cerr << "Error: This is not \"withcbc\" version; cannot specify --only-compute-min option." << endl;
+        printhelp = true;
+      }
+      break;
     }
   }
 
@@ -384,6 +394,8 @@ int main(int argc, char** argv){
     cerr << "Options:" << endl;
     cerr << "  -h or --help                Print this message and exit." << endl;
     cerr << "  -n or --no-search           Don't search minimal FVSs (use with --print-cycles)." << endl;
+    if(computeminnumFVS)
+      cerr << "  --only-compute-min          Only compute the mininum number of FVS, print a minimal FVS, and exit." << endl;
     cerr << "  --no-list                   Don't show list of chordless cycles and minimal FVSs." << endl;
     cerr << "  -c or --print-cycles        Print the set of chordless cycles at the head." << endl;
     cerr << "  -t or --print-tree          Print the tree list of minimal FVSs." << endl;
@@ -399,7 +411,7 @@ int main(int argc, char** argv){
   edges = vector<vector<int>>();
 
   // read
-  int s = read(argv[0], argv[optind], numnodes, numedges, nodes, edges,
+  auto s = read(argv[0], argv[optind], numnodes, numedges, nodes, edges,
                removenodelist, removednodes);
   if(s)
     return s;
@@ -444,9 +456,22 @@ int main(int argc, char** argv){
   vector<bitset<maxnumnodes>> FVSs;
   if(!nosearch){
     bitset<maxnumnodes> FVS, selected, searched;
-    if(calcminnumFVS){
-      calcminnumFVS(cycles, numnodes, minnumFVS, FVS);
+    if(computeminnumFVS){
+      computeminnumFVS(cycles, numnodes, minnumFVS, FVS);
       outputheader(numnodes, numedges, minnumFVS);
+      if(onlycomputemin){
+        unsigned int tmp = 1;
+        cout << "A minimal FVS: ";
+        for(int i = 0; i < numnodes; ++i)
+          if(FVS[i]){
+            cout << nodes[i];
+            if(tmp < minnumFVS)
+              cout << ", ";
+            ++tmp;
+          }
+        cout << endl;
+        return 0;
+      }
     }
     dfs(cycles, numnodes, FVSs, minnumFVS, 0, selected, searched);
     int statFVS[maxnumnodes];
@@ -468,7 +493,7 @@ int main(int argc, char** argv){
          });
 
     // output
-    if(!calcminnumFVS)
+    if(!computeminnumFVS)
       outputheader(numnodes, numedges, minnumFVS);
     if(!nolist){
       if(printtree){

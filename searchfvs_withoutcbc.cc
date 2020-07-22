@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void (*calcminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
+void (*computeminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
                       const int numnodes,
                       unsigned int& minnumFVS,
                       bitset<maxnumnodes>& FVS) = NULL;
