@@ -9,7 +9,7 @@ Type
 
     $ make searchfvs
 
-Then the binary searchfvs will be generated. This binary does not depend on
+Then the binary `searchfvs` will be generated. This binary does not depend on
 any external libraries.
 
 If [COIN-OR CBC solver](https://github.com/coin-or/Cbc) is installed on your computer,
@@ -21,9 +21,9 @@ or simply
 
     $ make
 
-Then the binary searchfvs_withcbc will be generated.
+Then the binary `searchfvs_withcbc` will be generated.
 This version is a bit faster than the &quot;without CBC&quot; version
-thanks to find a solution of an exact cover problem as ILP by CBC solver.
+thanks to finding a solution of an exact cover problem as ILP by CBC solver.
 
 ## Usage
 
