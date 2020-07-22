@@ -12,8 +12,8 @@ searchfvs: $(OBJS_SEARCHFVS)
 searchfvs_withcbc: $(OBJS_SEARCHFVS_WITHCBC)
 	$(CXX) $(LDFLAGS) $(LIBS_WITHCBC) $(OBJS_SEARCHFVS_WITHCBC) -o searchfvs_withcbc
 
-searchfvs_common.o: searchfvs.hh
-searchfvs_orig.o: searchfvs.hh
+searchfvs.o: searchfvs.hh
+searchfvs_withoutcbc.o: searchfvs.hh
 searchfvs_withcbc.o: searchfvs.hh
 
 clean:
