@@ -23,7 +23,7 @@ or simply
 
 Then the binary `searchfvs_withcbc` will be generated.
 This version is a bit faster than the &quot;without CBC&quot; version
-thanks to finding a solution of an exact cover problem as ILP by CBC solver.
+thanks to finding a solution of a set cover problem as ILP by CBC solver.
 
 ## Usage
 

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Solve exact cover problem by COINOR CBC solver.
+// Solve set cover problem by COINOR CBC solver.
 void _computeminnumFVS(vector<bitset<maxnumnodes>>& cycles,
                     const int numnodes,
                     unsigned int& minnumFVS,

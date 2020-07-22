@@ -15,7 +15,7 @@
 
 using namespace std;
 
-// Solve exact cover problem by simple DFS.
+// Solve set cover problem by simple DFS.
 void dfs(vector<bitset<maxnumnodes>>& cycles,
                 const int numnodes,
                 vector<bitset<maxnumnodes>>& FVSs,
