@@ -4,15 +4,31 @@ Searchfvs is a simple solver for the directed [feedback vertex set (FVS) problem
 
 ## Compile
 
-The program is written in C++11. You must prepare a C++ compiler
-implemented C++11 features. E.g., recent g++ will generate the binary by
-the following command:
+The program is written in C++. You must prepare a C++ compiler implemented C++14 features.
+Type
 
-    $ g++ -O2 -std=c++11 -o searchfvs searchfvs.cc
+    $ make searchfvs
+
+Then the binary searchfvs will be generated. This binary does not depend on
+any external libraries.
+
+If [COIN-OR CBC solver](https://github.com/coin-or/Cbc) is installed on your computer,
+type
+
+    $ make searchfvs_withcbc
+
+or simply
+
+    $ make
+
+Then the binary searchfvs_withcbc will be generated.
+This version is a bit faster than the &quot;without CBC&quot; version
+thanks to find a solution of an exact cover problem as ILP by CBC solver.
 
 ## Usage
 
     $ ./searchfvs [options] <network data>
+    $ ./searchfvs_withcbc [options] <network data>
 
 &lt;network data&gt; should be a text file containing the list of edges of a network
 (see the next section). Then the program finds all the minimal FVSs of
