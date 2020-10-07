@@ -1,7 +1,7 @@
 CFLAGS:=-O2 -march=native -pipe  -Wall -Wextra -pedantic
 CXXFLAGS:=$(CFLAGS) -std=c++14
-OBJS_SEARCHFVS:=searchfvs.o searchfvs_withoutcbc.o
-OBJS_SEARCHFVS_WITHCBC:=searchfvs.o searchfvs_withcbc.o
+OBJS_SEARCHFVS:=searchfvs.o searchfvs_withoutcbc.o digraph.o
+OBJS_SEARCHFVS_WITHCBC:=searchfvs.o searchfvs_withcbc.o digraph.o
 LIBS_WITHCBC:=-lCoinUtils -lOsiClp -lCbc
 
 .PHONY: all clean check-syntax

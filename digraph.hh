@@ -1,0 +1,58 @@
+// digraph.hh, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
+
+#ifndef _DIGRAPH_HH_
+#define _DIGRAPH_HH_
+
+#include <vector>
+#include <string>
+#include <bitset>
+
+class digraph {
+private:
+  constexpr static int maxnumnodes = 10000; // The max number of nodes of input network.
+                                // If the input network has more nodes, increase this value
+                                // and recompile.
+                                // Developer notes: we can use boost::dynamic_bitset
+                                // as an alternative of std::bitset. However, dynamic_bitset
+                                // is much slower than bitset.
+  int numnodes, numedges;
+  unsigned int minnumFVS;
+  std::vector<std::string> nodes;
+  std::vector<std::vector<int>> edges; // edges[i] = {j0, j1, j2, ...}: i -> j
+  unsigned int srtnodeind[maxnumnodes]; // node index sorted by the number appearing in the minimal FVSs
+  int statFVS[maxnumnodes];
+  std::vector<std::bitset<maxnumnodes>> cycles;
+  std::vector<std::string> removenodelist; // list of nodes specified by --remove-node
+  std::vector<std::string> removednodes;   // actually removed nodes
+  std::vector<std::bitset<maxnumnodes>> FVSs;
+
+  void addnode(const std::string node);
+  void addandreducecycles(const std::bitset<maxnumnodes>& cycle);
+  void _detectcycles(const int start, const int i,
+                     const std::bitset<maxnumnodes>& searched,
+                     std::bitset<maxnumnodes>& path);
+  void _dfs(unsigned int cyclenum,
+            std::bitset<maxnumnodes>& selected,
+            std::bitset<maxnumnodes>& searched);
+  void _calcstatFVS(const std::vector<std::bitset<maxnumnodes>> listFVSs, int* statFVS);
+  void _outputFVSsastree(const std::vector<std::bitset<maxnumnodes>>& currentFVSs,
+                                const int* statFVS,
+                                const int pnum,
+                                const int level,
+                                const bool printpolynomial,
+                                const int maxtreedepth);
+public:
+  digraph();
+  int read(const std::string filename);
+  void detectcycles();
+  inline void dfs();
+  void outputcycles(const bool nolist);
+  void calcstatFVS();
+  inline void outputheader();
+  void outputstat();
+  void outputFVSs();
+  void outputFVSsaspolynomial();
+
+};
+
+#endif
