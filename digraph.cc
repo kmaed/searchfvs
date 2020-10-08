@@ -16,7 +16,7 @@ digraph::digraph(){
   minnumFVS = maxnumnodes;
 }
 
-int digraph::read(const string filename){
+int digraph::read(const string filename, const vector<string>& removenodelist){
   ifstream fin;
   fin.exceptions(ios::failbit);
   try{
@@ -82,10 +82,6 @@ void digraph::addnode(const string node){
   }
 }
 
-inline void digraph::outputheader(){
-  cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << endl;
-}
-
 void digraph::addandreducecycles(const bitset<maxnumnodes>& cycle){
   // add?
   for(const auto& c: cycles)
@@ -145,8 +141,13 @@ void digraph::detectcycles(){
     searched.set(i);
     _detectcycles(i, i, searched, path);
   }
+  sort(cycles.begin(), cycles.end(),
+       [](const bitset<maxnumnodes> &x, const bitset<maxnumnodes> &y)->bool{
+         return x.count() < y.count();
+       });
 }
 
+// Solve set cover problem by simple DFS.
 void digraph::_dfs(unsigned int cyclenum,
                    bitset<maxnumnodes>& selected,
                    bitset<maxnumnodes>& searched) {
@@ -171,11 +172,6 @@ void digraph::_dfs(unsigned int cyclenum,
     FVSs.clear();
   }
   FVSs.push_back(selected);
-}
-
-inline void digraph::dfs(){
-  bitset<maxnumnodes> selected, searched;
-  _dfs(0, selected, searched);
 }
 
 void digraph::outputcycles(const bool nolist){
@@ -224,6 +220,21 @@ void digraph::_calcstatFVS(const vector<bitset<maxnumnodes>> listFVSs, int* stat
   for(int i = 0; i < maxnumnodes; ++i)
     statFVS[i] = count_if(listFVSs.begin(), listFVSs.end(),
                           [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
+}
+
+void digraph::outputremovednodes(){
+  if(!removednodes.empty()){
+    cout << "Removed nodes: ";
+    bool first = true;
+    for(const auto& r: removednodes){
+      if(!first)
+        cout << ", ";
+      else
+        first = false;
+      cout << r;
+    }
+    cout << endl << endl;
+  }
 }
 
 void digraph::outputstat(){

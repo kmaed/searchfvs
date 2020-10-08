@@ -7,11 +7,11 @@
 
 using namespace std;
 
+bool withcbc = true;
+
 // Solve set cover problem by COINOR Cbc solver.
-void _computeminnumFVS(vector<bitset<maxnumnodes>>& cycles,
-                       const int numnodes,
-                       unsigned int& minnumFVS,
-                       bitset<maxnumnodes>& FVS){
+void digraph::computeminnumFVS(const bool onlycomputemin, const bool nolist){
+  bitset<maxnumnodes> FVS;
   // construct the coefficient matrix of ILP
   vector<int> rowinds, colinds;
   vector<double> els;
@@ -75,9 +75,20 @@ void _computeminnumFVS(vector<bitset<maxnumnodes>>& cycles,
   for(auto j = 0; j < numcols; ++j)
     if(solution[j])
       FVS.set(j);
-}
 
-void (*computeminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
-                         const int numnodes,
-                         unsigned int& minnumFVS,
-                         bitset<maxnumnodes>& FVS) = _computeminnumFVS;
+  outputheader();
+  if(onlycomputemin){
+    if(nolist)
+      return;
+    unsigned int tmp = 1;
+    cout << "A minimal FVS: ";
+    for(int i = 0; i < numnodes; ++i)
+      if(FVS[i]){
+        cout << nodes[i];
+        if(tmp < minnumFVS)
+          cout << ", ";
+        ++tmp;
+      }
+    cout << endl;
+  }
+}

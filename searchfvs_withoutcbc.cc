@@ -4,7 +4,5 @@
 
 using namespace std;
 
-void (*computeminnumFVS)(vector<bitset<maxnumnodes>>& cycles,
-                         const int numnodes,
-                         unsigned int& minnumFVS,
-                         bitset<maxnumnodes>& FVS) = NULL;
+bool withcbc = false;
+void digraph::computeminnumFVS(const bool, const bool){}
