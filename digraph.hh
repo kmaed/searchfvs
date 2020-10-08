@@ -61,8 +61,7 @@ public:
   inline void dfs(){
     std::bitset<maxnumnodes> selected, searched;
     _dfs(0, selected, searched);
-  };
-
+  }
 
   inline void outputheader(){
     std::cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << std::endl;

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-bool withcbc = true;
+const bool withcbc = true;
 
 // Solve set cover problem by COINOR Cbc solver.
 void digraph::computeminnumFVS(const bool onlycomputemin, const bool nolist){

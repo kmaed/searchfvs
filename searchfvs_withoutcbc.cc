@@ -4,5 +4,5 @@
 
 using namespace std;
 
-bool withcbc = false;
+const bool withcbc = false;
 void digraph::computeminnumFVS(const bool, const bool){}

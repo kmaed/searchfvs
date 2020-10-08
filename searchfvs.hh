@@ -8,6 +8,6 @@
 
 #include "digraph.hh"
 
-extern bool withcbc;
+extern const bool withcbc;
 
 #endif

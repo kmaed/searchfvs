@@ -68,7 +68,6 @@ int digraph::read(const string filename, const vector<string>& removenodelist){
     }
   }
   return 0;
-
 }
 
 void digraph::addnode(const string node){
