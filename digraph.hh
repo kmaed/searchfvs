@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <bitset>
+#include <algorithm>
 
 class digraph {
 public:
@@ -31,6 +32,12 @@ private:
   std::vector<std::string> removednodes;   // actually removed nodes
   std::vector<std::bitset<maxnumnodes>> FVSs;
 
+  inline static void _calcstatFVS(const std::vector<std::bitset<maxnumnodes>> listFVSs,
+                                  int* statFVS) {
+    for(auto i = 0; i < maxnumnodes; ++i)
+      statFVS[i] = count_if(listFVSs.begin(), listFVSs.end(),
+                            [&](const std::bitset<maxnumnodes>& b)->bool{return b[i];});}
+
   void addnode(const std::string node);
   void addandreducecycles(const std::bitset<maxnumnodes>& cycle);
   void _detectcycles(const int start, const int i,
@@ -39,35 +46,34 @@ private:
   void _dfs(unsigned int cyclenum,
             std::bitset<maxnumnodes>& selected,
             std::bitset<maxnumnodes>& searched);
-  void _calcstatFVS(const std::vector<std::bitset<maxnumnodes>> listFVSs, int* statFVS);
   void _outputFVSsastree(const std::vector<std::bitset<maxnumnodes>>& currentFVSs,
                          const int* statFVS,
                          const int pnum,
                          const int level,
                          const bool printpolynomial,
-                         const int maxtreedepth);
+                         const int maxtreedepth) const;
+
 public:
   digraph();
   int read(const std::string filename, const std::vector<std::string>& removenodelist);
   void detectcycles();
-  void outputcycles(const bool nolist);
   void calcstatFVS();
-  void outputremovednodes();
-
-  void outputstat();
-  void outputFVSs();
-  void outputFVSsaspolynomial();
+  void outputcycles(const bool nolist) const;
+  void outputremovednodes() const;
+  void outputstat() const;
+  void outputFVSs() const;
+  void outputFVSsaspolynomial() const;
 
   inline void dfs(){
     std::bitset<maxnumnodes> selected, searched;
     _dfs(0, selected, searched);
   }
 
-  inline void outputheader(){
+  inline void outputheader() const {
     std::cout << "#nodes,#edges,#[nodes of minimal FVS] = " << numnodes << "," << numedges << "," << minnumFVS << std::endl;
   }
 
-  inline void outputFVSsastree(const bool printpolynomial, const int maxtreedepth){
+  inline void outputFVSsastree(const bool printpolynomial, const int maxtreedepth) const {
     _outputFVSsastree(FVSs, statFVS, FVSs.size(), 0, printpolynomial, maxtreedepth);
   }
 

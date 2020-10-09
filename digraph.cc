@@ -173,7 +173,7 @@ void digraph::_dfs(unsigned int cyclenum,
   FVSs.push_back(selected);
 }
 
-void digraph::outputcycles(const bool nolist){
+void digraph::outputcycles(const bool nolist) const {
   cout << "#[chordless cycles] = " << cycles.size() << endl;
   if(!nolist){
     int n = 1;
@@ -215,13 +215,8 @@ void digraph::calcstatFVS(){
          return true;
        });
 }
-void digraph::_calcstatFVS(const vector<bitset<maxnumnodes>> listFVSs, int* statFVS){
-  for(int i = 0; i < maxnumnodes; ++i)
-    statFVS[i] = count_if(listFVSs.begin(), listFVSs.end(),
-                          [&](const bitset<maxnumnodes>& b)->bool{return b[i];});
-}
 
-void digraph::outputremovednodes(){
+void digraph::outputremovednodes() const {
   if(!removednodes.empty()){
     cout << "Removed nodes: ";
     bool first = true;
@@ -236,7 +231,7 @@ void digraph::outputremovednodes(){
   }
 }
 
-void digraph::outputstat(){
+void digraph::outputstat() const {
   int ws = max_element(nodes.begin(), nodes.end(),
                       [](const string& x, const string& y)->bool{return x.length() < y.length();})->length();
   int w = to_string(FVSs.size()).length();
@@ -249,7 +244,7 @@ void digraph::outputstat(){
   cout << endl;
 }
 
-void digraph::outputFVSs(){
+void digraph::outputFVSs() const {
   int w = to_string(FVSs.size()).length();
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     cout << setw(w) << i+1 << ": ";
@@ -266,7 +261,7 @@ void digraph::outputFVSs(){
   cout << endl;
 }
 
-void digraph::outputFVSsaspolynomial(){
+void digraph::outputFVSsaspolynomial() const {
   for(unsigned int i = 0; i < FVSs.size(); ++i){
     unsigned int tmp = 1;
     for(int j = 0; j < numnodes; ++j)
@@ -289,7 +284,7 @@ void digraph::_outputFVSsastree(const vector<bitset<maxnumnodes>>& currentFVSs,
                                 const int pnum,
                                 const int level,
                                 const bool printpolynomial,
-                                const int maxtreedepth){
+                                const int maxtreedepth) const {
   static int prevlevel = -1;
   if(!currentFVSs.size())
     return;
