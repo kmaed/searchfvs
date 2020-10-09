@@ -72,7 +72,7 @@ int digraph::read(const string filename, const vector<string>& removenodelist){
 
 void digraph::addnode(const string node){
   nodes.push_back(node);
-  edges.push_back(vector<int>());
+  edges.emplace_back();
   ++numnodes;
   if(numnodes > maxnumnodes){
     cerr << "Error: the number of nodes in the input network is too large!" << endl;
