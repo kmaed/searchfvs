@@ -35,8 +35,9 @@ private:
   inline static void _calcstatFVS(const std::vector<std::bitset<maxnumnodes>> listFVSs,
                                   int* statFVS) {
     for(auto i = 0; i < maxnumnodes; ++i)
-      statFVS[i] = count_if(listFVSs.begin(), listFVSs.end(),
-                            [&](const std::bitset<maxnumnodes>& b)->bool{return b[i];});}
+      statFVS[i] = count_if(listFVSs.cbegin(), listFVSs.cend(),
+                            [&](const std::bitset<maxnumnodes>& b)->bool{return b[i];});
+  }
 
   void addnode(const std::string node);
   void addandreducecycles(const std::bitset<maxnumnodes>& cycle);

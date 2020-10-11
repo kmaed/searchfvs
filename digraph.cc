@@ -1,11 +1,9 @@
 // digraph.cc, written by Kazuki Maeda <kmaeda at kmaeda.net>, 2020
 
-#include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include <algorithm>
 #include "digraph.hh"
 
 using namespace std;
@@ -40,25 +38,25 @@ int digraph::read(const string filename, const vector<string>& removenodelist){
           cerr << filename << ":" << lineno << ": warning: illegal input line \"" << tmp << "\", ignored." << endl;
           continue;
         }
-        auto fromrem = find(removenodelist.begin(), removenodelist.end(), from);
-        auto torem = find(removenodelist.begin(), removenodelist.end(), to);
+        auto fromrem = find(removenodelist.cbegin(), removenodelist.cend(), from);
+        auto torem = find(removenodelist.cbegin(), removenodelist.cend(), to);
         if(removenodelist.size() &&
-           (fromrem != removenodelist.end() || torem != removenodelist.end())){
+           (fromrem != removenodelist.cend() || torem != removenodelist.cend())){
           if(fromrem != removenodelist.end() &&
-             find(removednodes.begin(), removednodes.end(), from) == removednodes.end())
+             find(removednodes.cbegin(), removednodes.cend(), from) == removednodes.cend())
             removednodes.push_back(from);
-          if(torem != removenodelist.end() &&
-             find(removednodes.begin(), removednodes.end(), to) == removednodes.end())
+          if(torem != removenodelist.cend() &&
+             find(removednodes.cbegin(), removednodes.cend(), to) == removednodes.cend())
             removednodes.push_back(to);
           continue;
         }
-        auto fromno = distance(nodes.begin(), find(nodes.begin(), nodes.end(), from));
+        auto fromno = distance(nodes.cbegin(), find(nodes.cbegin(), nodes.cend(), from));
         if(fromno == numnodes)
           addnode(from);
-        auto tono = distance(nodes.begin(), find(nodes.begin(), nodes.end(), to));
+        auto tono = distance(nodes.cbegin(), find(nodes.cbegin(), nodes.cend(), to));
         if(tono == numnodes)
           addnode(to);
-        if(find(edges[fromno].begin(), edges[fromno].end(), tono) == edges[fromno].end()){
+        if(find(edges[fromno].cbegin(), edges[fromno].cend(), tono) == edges[fromno].cend()){
           ++numedges;
           edges[fromno].push_back(tono);
         }
@@ -232,7 +230,7 @@ void digraph::outputremovednodes() const {
 }
 
 void digraph::outputstat() const {
-  int ws = max_element(nodes.begin(), nodes.end(),
+  int ws = max_element(nodes.cbegin(), nodes.cend(),
                       [](const string& x, const string& y)->bool{return x.length() < y.length();})->length();
   int w = to_string(FVSs.size()).length();
   cout << "Statistics:" << endl;
