@@ -57,6 +57,7 @@ the program ignores the line.
 ## Related works
 
 * [Kenji Kobayashi, Kazuki Maeda, Miki Tokuoka, Atsushi Mochizuki and Yutaka Satou, Controlling cell fate specification system by key genes determined from network structure, iScience 4 (2018) 281–293](https://doi.org/10.1016/j.isci.2018.05.004).
+* [Kenji Kobayashi, Kazuki Maeda, Miki Tokuoka, Atsushi Mochizuki and Yutaka Satou, Using linkage logic theory to control dynamics of a gene regulatory network of a chordate embryo, Scientific Reports 11 (2021) 4001](https://doi.org/10.1038/s41598-021-83045-y).
 
 ## Contact
 
